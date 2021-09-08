@@ -10,6 +10,8 @@ public:
 
 	CPtrList m_ptrClientSocketList;
 	virtual void OnAccept(int nErrorCode);
+	void CloseClientSocket(CSocket* pClient);
+	void SendChatDataAll(TCHAR* pszMessage);
 };
 
 
