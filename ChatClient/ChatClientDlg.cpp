@@ -52,6 +52,7 @@ END_MESSAGE_MAP()
 
 CChatClientDlg::CChatClientDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_CHATCLIENT_DIALOG, pParent)
+	, m_strMessage(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -59,12 +60,15 @@ CChatClientDlg::CChatClientDlg(CWnd* pParent /*=nullptr*/)
 void CChatClientDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LIST, m_List);
+	DDX_Text(pDX, IDC_EDIT_MESSAGE, m_strMessage);
 }
 
 BEGIN_MESSAGE_MAP(CChatClientDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON_SEND, &CChatClientDlg::OnBnClickedButtonSend)
 END_MESSAGE_MAP()
 
 
@@ -100,7 +104,14 @@ BOOL CChatClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	m_Socket.Create();
+	if (m_Socket.Connect(_T("127.0.0.1"), 21000) == FALSE) // 클래스의 메서드로 인자로 전달받은 주소와 포트 번호에 연결하는 역할을 함
+	{													   // , IP주소는 자신을 가리키는 주소이다, 포트 번호는 서버와 동일해야 함
+		AfxMessageBox(_T("ERROR : Failed to connect server"));
+		PostQuitMessage(0);
 
+		return FALSE;
+	}
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -153,3 +164,14 @@ HCURSOR CChatClientDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CChatClientDlg::OnBnClickedButtonSend()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData(TRUE);
+	m_Socket.Send((LPVOID)(LPCTSTR)m_strMessage, m_strMessage.GetLength() * 2);
+
+	m_strMessage = _T("");
+	UpdateData(FALSE);
+}
