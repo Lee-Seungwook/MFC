@@ -7,7 +7,11 @@ class CClientSocket : public CSocket
 public:
 	CClientSocket();
 	virtual ~CClientSocket();
-//	virtual void OnAccept(int nErrorCode);
+
+	CAsyncSocket* m_pListenSocket;
+	void SetListenSocket(CAsyncSocket* pSocket);
+	virtual void OnClose(int nErrorCode);
+	virtual void OnReceive(int nErrorCode);
 };
 
 
