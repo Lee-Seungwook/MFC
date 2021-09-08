@@ -7,6 +7,8 @@
 #include "ChatServer.h"
 #include "ChatServerDlg.h"
 #include "afxdialogex.h"
+#include "ClientSocket.h"
+#include "ListenSocket.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -66,6 +68,7 @@ BEGIN_MESSAGE_MAP(CChatServerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -101,6 +104,18 @@ BOOL CChatServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+
+	if (m_ListenSocket.Create(21000, SOCK_STREAM)) // 소켓을 생성하는 역할,( 생성할 소켓에 바인드 되는 포트 번호, SOCK_STREAM: 소켓이 TCP 소켓임을 의미)
+	{
+		if (!m_ListenSocket.Listen()) // 서버가 클라이언트의 접속을 받을 수 있는  상태가 되도록 함
+		{
+			AfxMessageBox(_T("ERROR : Listen()return FALSE"));
+		}
+	}
+	else
+	{
+		AfxMessageBox(_T("ERROR : Failed to Create server socket!"));
+	}
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -154,3 +169,30 @@ HCURSOR CChatServerDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CChatServerDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	POSITION pos;
+	pos = m_ListenSocket.m_ptrClientSocketList.GetHeadPosition();
+	CClientSocket* pClient = NULL;
+
+	while (pos != NULL)
+	{
+		pClient = (CClientSocket*)m_ListenSocket.m_ptrClientSocketList.GetNext(pos);
+
+		if (pClient != NULL)
+		{
+			pClient->ShutDown();
+			pClient->Close();
+
+			delete pClient;
+		}
+	}
+
+	m_ListenSocket.ShutDown();
+	m_ListenSocket.Close();
+}

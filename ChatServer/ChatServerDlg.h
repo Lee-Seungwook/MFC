@@ -8,7 +8,7 @@
 
 
 // CChatServerDlg 대화 상자
-class CChatServerDlg : public CDialog
+class CChatServerDlg : public CDialogEx
 {
 // 생성입니다.
 public:
@@ -36,4 +36,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CListBox m_List;
+	afx_msg void OnDestroy();
 };
