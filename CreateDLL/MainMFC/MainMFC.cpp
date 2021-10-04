@@ -1,26 +1,27 @@
-﻿// ChatServer.cpp: 응용 프로그램에 대한 클래스 동작을 정의합니다.
+﻿
+// MainMFC.cpp: 응용 프로그램에 대한 클래스 동작을 정의합니다.
 //
 
 #include "pch.h"
 #include "framework.h"
-#include "ChatServer.h"
-#include "ChatServerDlg.h"
+#include "MainMFC.h"
+#include "MainMFCDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// CChatServerApp
+// CMainMFCApp
 
-BEGIN_MESSAGE_MAP(CChatServerApp, CWinApp)
+BEGIN_MESSAGE_MAP(CMainMFCApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 
-// CChatServerApp 생성
+// CMainMFCApp 생성
 
-CChatServerApp::CChatServerApp()
+CMainMFCApp::CMainMFCApp()
 {
 	// 다시 시작 관리자 지원
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
@@ -30,14 +31,14 @@ CChatServerApp::CChatServerApp()
 }
 
 
-// 유일한 CChatServerApp 개체입니다.
+// 유일한 CMainMFCApp 개체입니다.
 
-CChatServerApp theApp;
+CMainMFCApp theApp;
 
 
-// CChatServerApp 초기화
+// CMainMFCApp 초기화
 
-BOOL CChatServerApp::InitInstance()
+BOOL CMainMFCApp::InitInstance()
 {
 	// 응용 프로그램 매니페스트가 ComCtl32.dll 버전 6 이상을 사용하여 비주얼 스타일을
 	// 사용하도록 지정하는 경우, Windows XP 상에서 반드시 InitCommonControlsEx()가 필요합니다.
@@ -50,12 +51,6 @@ BOOL CChatServerApp::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
-
-	if (!AfxSocketInit())
-	{
-		AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
-		return FALSE;
-	}
 
 
 	AfxEnableControlContainer();
@@ -76,7 +71,7 @@ BOOL CChatServerApp::InitInstance()
 	// 적절한 내용으로 수정해야 합니다.
 	SetRegistryKey(_T("로컬 응용 프로그램 마법사에서 생성된 응용 프로그램"));
 
-	CChatServerDlg dlg;
+	CMainMFCDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

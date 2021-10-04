@@ -1,7 +1,7 @@
-#include "..\pch.h"
+
 #include <assert.h>
 #include "IppConvert.h"
-
+#include "..\\pch.h"
 void IppDibToImage(IppDib& dib, IppByteImage& img)
 {
 	assert(dib.IsValid());
