@@ -1,26 +1,27 @@
-﻿// ChatServer.cpp: 응용 프로그램에 대한 클래스 동작을 정의합니다.
+﻿
+// ChattingServer.cpp: 응용 프로그램에 대한 클래스 동작을 정의합니다.
 //
 
 #include "pch.h"
 #include "framework.h"
-#include "ChatServer.h"
-#include "ChatServerDlg.h"
+#include "ChattingServer.h"
+#include "ChattingServerDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// CChatServerApp
+// CChattingServerApp
 
-BEGIN_MESSAGE_MAP(CChatServerApp, CWinApp)
+BEGIN_MESSAGE_MAP(CChattingServerApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 
-// CChatServerApp 생성
+// CChattingServerApp 생성
 
-CChatServerApp::CChatServerApp()
+CChattingServerApp::CChattingServerApp()
 {
 	// 다시 시작 관리자 지원
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
@@ -30,14 +31,14 @@ CChatServerApp::CChatServerApp()
 }
 
 
-// 유일한 CChatServerApp 개체입니다.
+// 유일한 CChattingServerApp 개체입니다.
 
-CChatServerApp theApp;
+CChattingServerApp theApp;
 
 
-// CChatServerApp 초기화
+// CChattingServerApp 초기화
 
-BOOL CChatServerApp::InitInstance()
+BOOL CChattingServerApp::InitInstance()
 {
 	// 응용 프로그램 매니페스트가 ComCtl32.dll 버전 6 이상을 사용하여 비주얼 스타일을
 	// 사용하도록 지정하는 경우, Windows XP 상에서 반드시 InitCommonControlsEx()가 필요합니다.
@@ -76,7 +77,7 @@ BOOL CChatServerApp::InitInstance()
 	// 적절한 내용으로 수정해야 합니다.
 	SetRegistryKey(_T("로컬 응용 프로그램 마법사에서 생성된 응용 프로그램"));
 
-	CChatServerDlg dlg;
+	CChattingServerDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

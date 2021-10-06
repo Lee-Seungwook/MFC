@@ -1,4 +1,6 @@
+
 #include "stdafx.h"
+#include "pch.h"
 #include "IppGeometry.h"
 #include "math.h"
 
