@@ -7,7 +7,7 @@
 #include "ChattingServer.h"
 #include "ChattingServerDlg.h"
 #include "afxdialogex.h"
-#include "ListenSocket.h"
+
 #include "ChildSocket.h"
 
 #ifdef _DEBUG
