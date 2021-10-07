@@ -22,7 +22,7 @@ void CListenSocket::OnAccept(int nErrorCode)
 	pChild->SetListenSocket(this);
 	m_ptrChildSocketList.AddTail(pChild);
 
-	CChattingServerDlg* pMain = (CChattingServerDlg*)AfxGetMainWnd();
+	CChattingServerDlg* pMain = (CChattingServerDlg*)AfxGetApp()->GetMainWnd();
 
 	pMain->m_List.AddString(_T("서버 접속 허용"));
 	pMain->m_List.SetCurSel(pMain->m_List.GetCount() - 1);

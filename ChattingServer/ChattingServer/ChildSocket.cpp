@@ -34,7 +34,7 @@ void CChildSocket::OnReceive(int nErrorCode)
 	int len;
 	if ((len = Receive(szBuffer, 1024)) > 0)
 	{
-		CChattingServerDlg* pMain = (CChattingServerDlg*)AfxGetMainWnd();
+		CChattingServerDlg* pMain = (CChattingServerDlg*)AfxGetApp()->GetMainWnd();
 		tmp.Format(_T("[%s] : %s"), strIPAddress, szBuffer);
 		pMain->m_List.AddString(tmp);
 		pMain->m_List.SetCurSel(pMain->m_List.GetCount() - 1);
