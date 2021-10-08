@@ -4,6 +4,8 @@
 #include "ChildSocket.h"
 #include "ListenSocket.h"
 
+#include "..\..\ChatClienLibrary\ChildServerAPI.h"
+#pragma comment( lib, "../Debug/ChatClienLibrary.lib" )
 
 void CChildSocket::SetListenSocket(CAsyncSocket* pSocket)
 {
@@ -34,10 +36,14 @@ void CChildSocket::OnReceive(int nErrorCode)
 	int len;
 	if ((len = Receive(szBuffer, 1024)) > 0)
 	{
-		CChattingServerDlg* pMain = (CChattingServerDlg*)AfxGetApp()->GetMainWnd();
+		/*CChattingServerDlg* pMain = (CChattingServerDlg*)AfxGetApp()->GetMainWnd();
 		tmp.Format(_T("[%s] : %s"), strIPAddress, szBuffer);
 		pMain->m_List.AddString(tmp);
 		pMain->m_List.SetCurSel(pMain->m_List.GetCount() - 1);
+
+		*/
+		CChildServerAPI API;
+		API.APIReceive(szBuffer, tmp, strIPAddress, len);
 
 		CListenSocket* pServerSocket = (CListenSocket*)m_pListenSocket;
 		pServerSocket->BroadCast(szBuffer, len);

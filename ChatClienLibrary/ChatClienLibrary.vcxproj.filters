@@ -30,6 +30,9 @@
     <ClCompile Include="ServerListenAPI.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ChildServerAPI.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ChatClienLibrary.def">
@@ -56,6 +59,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ServerListenAPI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildServerAPI.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

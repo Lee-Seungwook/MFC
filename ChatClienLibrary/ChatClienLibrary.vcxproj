@@ -188,6 +188,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ChatClienLibrary.cpp" />
+    <ClCompile Include="ChildServerAPI.cpp" />
     <ClCompile Include="ClientAPI.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -216,6 +217,7 @@
     <None Include="res\ChatClienLibrary.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChildServerAPI.h" />
     <ClInclude Include="ClientAPI.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />

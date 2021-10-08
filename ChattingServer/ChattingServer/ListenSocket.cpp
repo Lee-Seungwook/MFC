@@ -5,12 +5,12 @@
 #include "ChattingServerDlg.h"
 
 #include "..\..\ChatClienLibrary\ServerListenAPI.h"
-#pragma comment( lib, "ChatClienLibrary.lib")
+#pragma comment( lib, "../Debug/ChatClienLibrary.lib" )
 
 void CListenSocket::OnAccept(int nErrorCode)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
-	/*CChildSocket* pChild = new CChildSocket;
+	CChildSocket* pChild = new CChildSocket;
 
 	BOOL check = Accept(*pChild);
 
@@ -26,9 +26,10 @@ void CListenSocket::OnAccept(int nErrorCode)
 	CChattingServerDlg* pMain = (CChattingServerDlg*)AfxGetApp()->GetMainWnd();
 
 	pMain->m_List.AddString(_T("서버 접속 허용"));
-	pMain->m_List.SetCurSel(pMain->m_List.GetCount() - 1);*/
-	CServerListenAPI APIL;
-	APIL.APIAccept(m_ptrChildSocketList);
+	pMain->m_List.SetCurSel(pMain->m_List.GetCount() - 1);
+
+	/*CServerListenAPI APIL;
+	APIL.APIAccept(m_ptrChildSocketList);*/
 	CAsyncSocket::OnAccept(nErrorCode);
 }
 
@@ -44,8 +45,8 @@ void CListenSocket::CloseClientSocket(CSocket* pChild)
 	}
 	m_ptrChildSocketList.RemoveAt(pos);
 	delete pChild;*/
-	CServerListenAPI APIL;
-	APIL.APICloseClientSocket(pChild, m_ptrChildSocketList);
+	CServerListenAPI API;
+	API.APICloseClientSocket(pChild, m_ptrChildSocketList);
 }
 
 

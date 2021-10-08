@@ -12,7 +12,7 @@
 class DLL_SERVER CServerListenAPI : public CAsyncSocket
 {
 public: 
-	void APIAccept(CPtrList &m_ptrChildSocketList);
+	// void APIAccept( CPtrList &m_ptrChildSocketList);
 	void APICloseClientSocket(CSocket* (&pChild), CPtrList &m_ptrChildSocketList);
 	void APIBroadCast(char* pszBuffer, int len, CPtrList &m_ptrChildSocketList);
 };
