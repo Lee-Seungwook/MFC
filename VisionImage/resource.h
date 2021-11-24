@@ -9,7 +9,9 @@
 #define IDR_MAINFRAME                   128
 #define IDC_BUTTON_OPEN                 1000
 #define IDC_BUTTON2                     1001
+#define IDC_BUTTON_SAVE                 1001
 #define IDC_BUTTON3                     1002
+#define IDC_BUTTON_EXIT                 1002
 #define IDC_IMAGE                       1003
 
 // Next default values for new objects

@@ -8,6 +8,9 @@
 #include "VisionImageDlg.h"
 #include "afxdialogex.h"
 
+#include "IppImage.h"
+#include "IppConvert.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -54,6 +57,8 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_VISIONIMAGE_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	width = 0;
+	height = 0;
 }
 
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -66,6 +71,7 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_OPEN, &CVisionImageDlg::OnClickedButtonOpen)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CVisionImageDlg::OnClickedButtonSave)
 END_MESSAGE_MAP()
 
 
@@ -101,10 +107,10 @@ BOOL CVisionImageDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	// 그림 출력에 사용하기 위해 Picture Control의 위치를 얻는다.
-	GetDlgItem(IDC_IMAGE)->GetWindowRect(m_Image_rect);
-	// GetWindowRect로 좌표를 얻으면 캡션과 테두리 영역이 포함되기 때문에 해당 영역을 제외시킴
-	ScreenToClient(m_Image_rect);
+	
+	// 픽처 컨트롤의 크기를 구함
+	CWnd* pImageWnd = GetDlgItem(IDC_IMAGE);
+	pImageWnd->GetClientRect(m_Image_rect);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -129,31 +135,11 @@ void CVisionImageDlg::OnSysCommand(UINT nID, LPARAM lParam)
 void CVisionImageDlg::OnPaint()
 {
 	CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
-	if (IsIconic())
-	{
-		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
+	
 
-		// 클라이언트 사각형에서 아이콘을 가운데에 맞춥니다.
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
-		CRect rect;
-		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		// 아이콘을 그립니다.
-		dc.DrawIcon(x, y, m_hIcon);
-	}
-	else
-	{
-		if (!m_Image.IsNull()) {
-			// 이미지가 원본 크기와 다르게 출력될때 어떤 방식으로 이미지를 확대하거나 축소할 것인지를 결정
-			dc.SetStretchBltMode(HALFTONE); // 원본 이미지와의 차이가 가장 적음....
-			// 그림을 Picture Control 크기로 화면에 출력
-			m_Image.Draw(dc, m_Image_rect);
-		}
-		CDialogEx::OnPaint();
-	}
+	// 픽처 컨트롤의 크기에 맞게 입력 영상의 복사본의 크기를 조절
+	CPaintDC dcPreview(GetDlgItem(IDC_IMAGE));
+	m_DibRes.Draw(dcPreview.m_hDC, 0, 0);
 }
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
@@ -163,7 +149,44 @@ HCURSOR CVisionImageDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void CVisionImageDlg::SetImage(IppDib& dib)
+{
+	m_DibSrc = dib;
 
+	IppByteImage imgSrc, imgDst;
+	IppDibToImage(m_DibSrc, imgSrc);
+	IppResizeNearest(imgSrc, imgDst, m_Image_rect.Width(), m_Image_rect.Height());
+	IppImageToDib(imgDst, m_DibRes);
+
+	Invalidate(FALSE);
+}
+
+void CVisionImageDlg::IppResizeNearest(IppByteImage& imgSrc, IppByteImage& imgDst, int nw, int nh)
+{
+	int w = imgSrc.GetWidth();
+	int h = imgSrc.GetHeight();
+
+	imgDst.CreateImage(nw, nh);
+
+	BYTE** pSrc = imgSrc.GetPixels2D();
+	BYTE** pDst = imgDst.GetPixels2D();
+
+	int i, j, x, y;
+	double rx, ry;
+	for (j = 0; j < nh; j++)
+		for (i = 0; i < nw; i++)
+		{
+			rx = static_cast<double>(w - 1) * i / (nw - 1);
+			ry = static_cast<double>(h - 1) * j / (nh - 1);
+			x = static_cast<int>(rx + 0.5);
+			y = static_cast<int>(ry + 0.5);
+
+			if (x >= w) x = w - 1;
+			if (y >= h) y = h - 1;
+
+			pDst[j][i] = pSrc[y][x];
+		}
+}
 
 void CVisionImageDlg::OnClickedButtonOpen()
 {
@@ -175,20 +198,29 @@ void CVisionImageDlg::OnClickedButtonOpen()
 	if (IDOK == dlg.DoModal())
 	{
 		CString strPathName = dlg.GetPathName();
+		m_Dib.Load(CT2A(strPathName));
 
-		// get picture-controldc
-		int width, height;
-		m_Image.Destroy();
-		m_Image.Load(strPathName);
-		width = m_Image.GetWidth();
-		height = m_Image.GetHeight();
-
-		InvalidateRect(m_Image_rect, FALSE);
+		SetImage(m_Dib);
 	}
-
-	//if (m_Image.IsNull()) { // 그림이 없는 경우
-	//	m_Image.Load(L"Rena.bmp"); // 파일을 읽어서 비트맵 객체를 구성
-	//	// Picture Control 위치의 화면을 갱신해서 그림을 보이게 한다.
-	//	InvalidateRect(m_Image_rect, FALSE);
-	//}
+	
+	m_Dib.DestroyBitmap(); // 이걸 안 하면 연속적인 이미지 띄우기가 안됨.
 }
+
+
+void CVisionImageDlg::OnClickedButtonSave()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	CString szFilter = _T("Image(*.BMP, *.PNG, *.JPG) | *.BMP;*.PNG;*.JPG | ALL Files(*.*)|*.*||");
+
+	CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter);
+
+	if (IDOK == dlg.DoModal())
+	{
+		CString strPathName = dlg.GetPathName();
+		
+	}
+}
+
+
+
