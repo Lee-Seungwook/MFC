@@ -3,7 +3,7 @@
 #include "ChattingClientDlg.h"
 
 #include "..\ChatClienLibrary\ClientAPI.h"
-#pragma comment( lib, "../Debug/ChatClienLibrary.lib")
+#pragma comment( lib, "ChatClienLibrary.lib")
 
 void CClientSocket::OnClose(int nErrorCode)
 {
