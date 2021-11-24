@@ -218,7 +218,10 @@ void CVisionImageDlg::OnClickedButtonSave()
 	if (IDOK == dlg.DoModal())
 	{
 		CString strPathName = dlg.GetPathName();
-		
+		if (m_DibRes.IsValid())
+		{
+			m_DibRes.Save(CT2A(strPathName));
+		}
 	}
 }
 
