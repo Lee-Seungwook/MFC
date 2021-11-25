@@ -35,6 +35,8 @@ public:
 // 구현입니다.
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+//	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
@@ -60,7 +62,11 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	width = 0;
 	height = 0;
-	Flag = FALSE;
+	m_bMagFlag = FALSE;
+	m_bMoveFlag = FALSE;
+	m_bSaveFlag = FALSE;
+	ImageCorX = 0;
+	ImageCorY = 0;
 }
 
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -75,6 +81,9 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_OPEN, &CVisionImageDlg::OnClickedButtonOpen)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CVisionImageDlg::OnClickedButtonSave)
 	ON_BN_CLICKED(IDC_BUTTON_MAG, &CVisionImageDlg::OnClickedButtonMag)
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -117,6 +126,9 @@ BOOL CVisionImageDlg::OnInitDialog()
 	width = m_Image_rect.Width();
 	height = m_Image_rect.Height();
 
+	// 픽처 컨트롤의 좌표를 구함
+	GetDlgItem(IDC_IMAGE)->GetWindowRect(&m_Image_rect);
+	ScreenToClient(&m_Image_rect);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -144,14 +156,14 @@ void CVisionImageDlg::OnPaint()
 	
 	// 픽처 컨트롤의 크기에 맞게 입력 영상의 복사본의 크기를 조절
 	CPaintDC dcPreview(GetDlgItem(IDC_IMAGE));
-	if (Flag == FALSE)
+	if (m_bMagFlag == FALSE)
 	{
 		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, m_Image_rect.Width(), m_Image_rect.Height()); 
 	}
-	else if (Flag == TRUE)
+	else if (m_bMagFlag == TRUE)
 	{
 		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, m_Image_rect.Width(), m_Image_rect.Height(), 
-			0, 0, m_Image_rect.Width() / 4, m_Image_rect.Height() / 4); 
+			ImageCorX, ImageCorY, m_Image_rect.Width() / 3, m_Image_rect.Height() / 3); 
 	}
 }
 
@@ -249,7 +261,8 @@ void CVisionImageDlg::OnClickedButtonMag()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	if (m_DibRes.IsValid())
 	{
-		Flag = !Flag;
+		m_bMagFlag = !m_bMagFlag;
+		m_bSaveFlag = FALSE;
 		Invalidate(FALSE);
 	}
 	else
@@ -257,4 +270,69 @@ void CVisionImageDlg::OnClickedButtonMag()
 		AfxMessageBox(_T("영상이 없습니다."));
 	}
 	
+}
+
+
+void CVisionImageDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (point.x > m_Image_rect.left && point.x < m_Image_rect.right
+		&& point.y > m_Image_rect.top && point.y < m_Image_rect.bottom && m_bMagFlag)
+	{
+		m_bMoveFlag = TRUE;
+		m_pMousePt.x = point.x;
+		m_pMousePt.y = point.y;
+		Invalidate(FALSE);
+	}
+	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+void CVisionImageDlg::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (m_bMoveFlag)
+	{
+		m_bMoveFlag = !m_bMoveFlag;
+		m_bSaveFlag = TRUE;
+
+	}
+	CDialogEx::OnLButtonUp(nFlags, point);
+}
+
+
+void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	if (m_bMoveFlag)
+	{
+		if (!m_bSaveFlag)
+		{
+			int x, y;
+			x = point.x - m_pMousePt.x;
+			y = point.y - m_pMousePt.y;
+
+			if (x > 0)
+				SaveX = ImageCorX = x / 2;
+			
+			if (y > 0)
+				SaveY = ImageCorY = y / 2;
+
+			Invalidate(FALSE);
+		}
+		else if (m_bSaveFlag)
+		{
+			int x, y;
+			x = point.x - SaveX;
+			y = point.y - SaveY;
+
+			if (x > 0)
+				SaveX = ImageCorX = x / 2;
+
+			if (y > 0)
+				SaveY = ImageCorY = y / 2;
+
+			Invalidate(FALSE);
+		}
+	}
+	CDialogEx::OnMouseMove(nFlags, point);
 }
