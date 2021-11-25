@@ -60,6 +60,7 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	width = 0;
 	height = 0;
+	Flag = FALSE;
 }
 
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -73,6 +74,7 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_OPEN, &CVisionImageDlg::OnClickedButtonOpen)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CVisionImageDlg::OnClickedButtonSave)
+	ON_BN_CLICKED(IDC_BUTTON_MAG, &CVisionImageDlg::OnClickedButtonMag)
 END_MESSAGE_MAP()
 
 
@@ -112,6 +114,9 @@ BOOL CVisionImageDlg::OnInitDialog()
 	// 픽처 컨트롤의 크기를 구함
 	CWnd* pImageWnd = GetDlgItem(IDC_IMAGE);
 	pImageWnd->GetClientRect(m_Image_rect);
+	width = m_Image_rect.Width();
+	height = m_Image_rect.Height();
+
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -137,10 +142,17 @@ void CVisionImageDlg::OnPaint()
 {
 	CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
 	
-
 	// 픽처 컨트롤의 크기에 맞게 입력 영상의 복사본의 크기를 조절
 	CPaintDC dcPreview(GetDlgItem(IDC_IMAGE));
-	m_DibRes.Draw(dcPreview.m_hDC, 0, 0);
+	if (Flag == FALSE)
+	{
+		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, m_Image_rect.Width(), m_Image_rect.Height()); 
+	}
+	else if (Flag == TRUE)
+	{
+		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, m_Image_rect.Width(), m_Image_rect.Height(), 
+			0, 0, m_Image_rect.Width() / 4, m_Image_rect.Height() / 4); 
+	}
 }
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
@@ -178,6 +190,10 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 	}
 }
 
+void CVisionImageDlg::SetFlag()
+{
+
+}
 
 
 void CVisionImageDlg::OnClickedButtonOpen()
@@ -228,5 +244,17 @@ void CVisionImageDlg::OnClickedButtonSave()
 	}
 }
 
-
-
+void CVisionImageDlg::OnClickedButtonMag()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	if (m_DibRes.IsValid())
+	{
+		Flag = !Flag;
+		Invalidate(FALSE);
+	}
+	else
+	{
+		AfxMessageBox(_T("영상이 없습니다."));
+	}
+	
+}

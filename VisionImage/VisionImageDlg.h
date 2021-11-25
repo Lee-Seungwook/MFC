@@ -14,6 +14,8 @@ private:
 	CRect m_Image_rect; // Picture Control의 위치를 기억할 변수
 	CImage m_Image; // 사용자가 선택한 이미지 객체를 구성할 변수
 	int width, height;
+	BOOL Flag;
+	CPoint m_pMousePt;
 
 // 생성입니다.
 public:
@@ -44,7 +46,9 @@ protected:
 public:
 	afx_msg void OnClickedButtonOpen();
 	afx_msg void OnClickedButtonSave();
+	afx_msg void OnClickedButtonMag();
 
 public:
 	void SetImage(IppDib& dib);
+	void SetFlag();
 };
