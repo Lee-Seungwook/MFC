@@ -219,6 +219,8 @@ void CVisionImageDlg::OnClickedButtonOpen()
 	{
 		CString strPathName = dlg.GetPathName();
 		m_Dib.Load(CT2A(strPathName));
+		width = m_Dib.ImgWidth;
+		height = m_Dib.ImgHeight;
 
 		if (m_Dib.IsValid())
 		{
@@ -312,10 +314,10 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 			y = point.y - m_pMousePt.y;
 
 			if (x > 0)
-				SaveX = ImageCorX = x / 2;
+				SaveX = ImageCorX = x;
 			
 			if (y > 0)
-				SaveY = ImageCorY = y / 2;
+				SaveY = ImageCorY = y;
 
 			Invalidate(FALSE);
 		}

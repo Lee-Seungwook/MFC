@@ -62,5 +62,9 @@ private:
 	WORD m_nBitCount; // 픽셀 당 비트 수
 	DWORD m_nDibSize; // DIB 전체 크기(BITMAPINFOHEADER + 색상 테이블 + 픽셀 데이터)
 	BYTE* m_pDib;     // DIB 시작 주소(BITMAPINFOHEADER 시작 주소)
+
+public:
+	int ImgWidth;
+	int ImgHeight;
 };
 

@@ -178,6 +178,9 @@ BOOL IppDib::LoadBMP(const char* filename) {
 	m_nHeight = bmih.biHeight;
 	m_nBitCount = bmih.biBitCount;
 
+	ImgWidth = m_nWidth;
+	ImgHeight = m_nHeight;
+
 	// 픽셀 데이터 공간 계산
 	DWORD dwWidthStep = (DWORD)((m_nWidth * m_nBitCount / 8 + 3) & ~3); // 가로 한 줄 픽셀 정보를 저장하는데 필요한 메모리 바이트 수 저장
 	DWORD dwSizeImage = m_nHeight * dwWidthStep; // 픽셀 데이터 값을 저장하는 데 필요한 메모리 공간의 크기
