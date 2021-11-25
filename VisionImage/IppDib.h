@@ -49,6 +49,10 @@ private:
 	BOOL LoadBMP(const char* filename);
 	BOOL SaveBMP(const char* filename);
 
+	// JPG 파일 입출력
+	BOOL LoadJPG(const char* filename);
+	BOOL SaveJPG(const char* filename);
+
 	/*BOOL LoadJPG(const char* filename);
 	BOOL SaveJPG(const char* filename);*/
 

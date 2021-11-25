@@ -97,6 +97,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>IppImage\jpeg.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -122,7 +123,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(OPENCV_DIR)\x64\vc15\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world453d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world453d.lib; IppImage\jpeg.lib; %(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -191,6 +192,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="ImageSize.h" />
     <ClInclude Include="IppConvert.h" />
     <ClInclude Include="IppDib.h" />
     <ClInclude Include="IppImage.h" />
@@ -203,8 +205,10 @@
     <ClInclude Include="VisionImageDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ImageSize.cpp" />
     <ClCompile Include="IppConvert.cpp" />
     <ClCompile Include="IppDib.cpp" />
+    <ClCompile Include="IppDibJpg.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

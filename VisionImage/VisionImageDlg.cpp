@@ -10,6 +10,7 @@
 
 #include "IppImage.h"
 #include "IppConvert.h"
+#include "ImageSize.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -153,45 +154,36 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 {
 	m_DibSrc = dib;
 
-	IppByteImage imgSrc, imgDst;
-	IppDibToImage(m_DibSrc, imgSrc);
-	IppResizeNearest(imgSrc, imgDst, m_Image_rect.Width(), m_Image_rect.Height());
-	IppImageToDib(imgDst, m_DibRes);
-
-	Invalidate(FALSE);
+	if (m_DibSrc.GetBitCount() == 8)
+	{
+		IppByteImage imgSrc, imgDst;
+		IppDibToImage(m_DibSrc, imgSrc);
+		IppResizeBilinear(imgSrc, imgDst, m_Image_rect.Width(), m_Image_rect.Height());
+		IppImageToDib(imgDst, m_DibRes);
+		Invalidate(FALSE);
+	}
+	else if (m_DibSrc.GetBitCount() == 24)
+	{
+		IppRgbImage imgTemp;
+		IppByteImage imgSrc, imgDst;
+		IppDibToImage(m_DibSrc, imgTemp);
+		imgSrc.Convert(imgTemp);
+		IppResizeBilinear(imgSrc, imgDst, m_Image_rect.Width(), m_Image_rect.Height());
+		IppImageToDib(imgDst, m_DibRes);
+		Invalidate(FALSE);
+	}
+	else
+	{
+		AfxMessageBox(_T("잘못된 형식입니다."));
+	}
 }
 
-void CVisionImageDlg::IppResizeNearest(IppByteImage& imgSrc, IppByteImage& imgDst, int nw, int nh)
-{
-	int w = imgSrc.GetWidth();
-	int h = imgSrc.GetHeight();
 
-	imgDst.CreateImage(nw, nh);
-
-	BYTE** pSrc = imgSrc.GetPixels2D();
-	BYTE** pDst = imgDst.GetPixels2D();
-
-	int i, j, x, y;
-	double rx, ry;
-	for (j = 0; j < nh; j++)
-		for (i = 0; i < nw; i++)
-		{
-			rx = static_cast<double>(w - 1) * i / (nw - 1);
-			ry = static_cast<double>(h - 1) * j / (nh - 1);
-			x = static_cast<int>(rx + 0.5);
-			y = static_cast<int>(ry + 0.5);
-
-			if (x >= w) x = w - 1;
-			if (y >= h) y = h - 1;
-
-			pDst[j][i] = pSrc[y][x];
-		}
-}
 
 void CVisionImageDlg::OnClickedButtonOpen()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CString szFilter = _T("Image(*.BMP, *.PNG, *.JPG) | *.BMP;*.PNG;*.JPG | ALL Files(*.*)|*.*||");
+	CString szFilter = _T("Image(*.BMP, *.JPG) | *.BMP;*.JPG | ALL Files(*.*)|*.*||");
 
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, szFilter);
 
@@ -200,7 +192,14 @@ void CVisionImageDlg::OnClickedButtonOpen()
 		CString strPathName = dlg.GetPathName();
 		m_Dib.Load(CT2A(strPathName));
 
-		SetImage(m_Dib);
+		if (m_Dib.IsValid())
+		{
+			SetImage(m_Dib);
+		}
+		else
+		{
+			AfxMessageBox(_T("*.bmp, *.jpg 형식의 파일만 지원합니다."));
+		}
 	}
 	
 	m_Dib.DestroyBitmap(); // 이걸 안 하면 연속적인 이미지 띄우기가 안됨.
@@ -211,7 +210,7 @@ void CVisionImageDlg::OnClickedButtonSave()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
-	CString szFilter = _T("Image(*.BMP, *.PNG, *.JPG) | *.BMP;*.PNG;*.JPG | ALL Files(*.*)|*.*||");
+	CString szFilter = _T("Image(*.BMP) | *.BMP; | ALL Files(*.*)|*.*||");
 
 	CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter);
 
@@ -221,6 +220,10 @@ void CVisionImageDlg::OnClickedButtonSave()
 		if (m_DibRes.IsValid())
 		{
 			m_DibRes.Save(CT2A(strPathName));
+		}
+		else
+		{
+			AfxMessageBox(_T("*.bmp 형식의 파일만 지원합니다."));
 		}
 	}
 }

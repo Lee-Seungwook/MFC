@@ -46,6 +46,5 @@ public:
 	afx_msg void OnClickedButtonSave();
 
 public:
-	void IppResizeNearest(IppByteImage& imgSrc, IppByteImage& imgDst, int nw, int nh);
 	void SetImage(IppDib& dib);
 };
