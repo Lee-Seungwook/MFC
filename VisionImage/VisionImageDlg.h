@@ -58,7 +58,8 @@ public:
 public:
 	void SetImage(IppDib& dib); // 초기 이미지 설정하여 출력
 	void SetFlag(); // 아직 사용 X
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	CSliderCtrl m_SliderWidth;
+	CSliderCtrl m_SliderHeight;
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

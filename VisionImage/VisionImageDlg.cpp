@@ -72,6 +72,8 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_SLIDER_WIDTH, m_SliderWidth);
+	DDX_Control(pDX, IDC_SLIDER_HEIGHT, m_SliderHeight);
 }
 
 BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
@@ -81,9 +83,8 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_OPEN, &CVisionImageDlg::OnClickedButtonOpen)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CVisionImageDlg::OnClickedButtonSave)
 	ON_BN_CLICKED(IDC_BUTTON_MAG, &CVisionImageDlg::OnClickedButtonMag)
-	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
+	ON_WM_VSCROLL()
+	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -163,7 +164,7 @@ void CVisionImageDlg::OnPaint()
 	else if (m_bMagFlag == TRUE)
 	{
 		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, m_Image_rect.Width(), m_Image_rect.Height(), 
-			ImageCorX, ImageCorY, m_Image_rect.Width() / 3, m_Image_rect.Height() / 3); 
+			ImageCorX, ImageCorY, m_Image_rect.Width() / 4, m_Image_rect.Height() / 4); 
 	}
 }
 
@@ -219,11 +220,29 @@ void CVisionImageDlg::OnClickedButtonOpen()
 	{
 		CString strPathName = dlg.GetPathName();
 		m_Dib.Load(CT2A(strPathName));
-		width = m_Dib.ImgWidth;
-		height = m_Dib.ImgHeight;
-
+		
 		if (m_Dib.IsValid())
 		{
+			int RangeH, RangeW;
+			int FreqH, FreqW;
+			
+			width = m_Dib.ImgWidth; // 원본 영상의 가로
+			height = m_Dib.ImgHeight; // 원본 영상의 세로
+
+			RangeH = height;
+			RangeW = width;
+			m_SliderHeight.SetRange(0, RangeH);
+			m_SliderWidth.SetRange(0, RangeW);
+
+			FreqH = height / 8;
+			FreqW = width / 8;
+			
+			m_SliderHeight.SetTicFreq(FreqH);
+			m_SliderWidth.SetTicFreq(FreqW);
+
+			m_SliderHeight.SetPageSize(FreqH);
+			m_SliderWidth.SetPageSize(FreqW);
+		
 			SetImage(m_Dib);
 		}
 		else
@@ -274,67 +293,27 @@ void CVisionImageDlg::OnClickedButtonMag()
 	
 }
 
-
-void CVisionImageDlg::OnLButtonDown(UINT nFlags, CPoint point)
+void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	if (point.x > m_Image_rect.left && point.x < m_Image_rect.right
-		&& point.y > m_Image_rect.top && point.y < m_Image_rect.bottom && m_bMagFlag)
+	if (m_SliderHeight.GetSafeHwnd() == pScrollBar->GetSafeHwnd())
 	{
-		m_bMoveFlag = TRUE;
-		m_pMousePt.x = point.x;
-		m_pMousePt.y = point.y;
+		int nPos = m_SliderHeight.GetPos();
+		ImageCorY = nPos;
 		Invalidate(FALSE);
 	}
-	CDialogEx::OnLButtonDown(nFlags, point);
-}
-
-void CVisionImageDlg::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	if (m_bMoveFlag)
-	{
-		m_bMoveFlag = !m_bMoveFlag;
-		m_bSaveFlag = TRUE;
-
-	}
-	CDialogEx::OnLButtonUp(nFlags, point);
+	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
 
-void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
+void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	if (m_bMoveFlag)
+	if (m_SliderWidth.GetSafeHwnd() == pScrollBar->GetSafeHwnd())
 	{
-		if (!m_bSaveFlag)
-		{
-			int x, y;
-			x = point.x - m_pMousePt.x;
-			y = point.y - m_pMousePt.y;
-
-			if (x > 0)
-				SaveX = ImageCorX = x;
-			
-			if (y > 0)
-				SaveY = ImageCorY = y;
-
-			Invalidate(FALSE);
-		}
-		else if (m_bSaveFlag)
-		{
-			int x, y;
-			x = point.x - SaveX;
-			y = point.y - SaveY;
-
-			if (x > 0)
-				SaveX = ImageCorX = x / 2;
-
-			if (y > 0)
-				SaveY = ImageCorY = y / 2;
-
-			Invalidate(FALSE);
-		}
+		int nPos = m_SliderWidth.GetPos();
+		ImageCorX = nPos;
+		Invalidate(FALSE);
 	}
-	CDialogEx::OnMouseMove(nFlags, point);
+	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }

@@ -178,7 +178,8 @@ BOOL IppDib::LoadBMP(const char* filename) {
 	m_nHeight = bmih.biHeight;
 	m_nBitCount = bmih.biBitCount;
 
-	ImgWidth = m_nWidth;
+	// 영상의 크기 정보(픽셀 정보)를 전달하기 위한 변수
+	ImgWidth = m_nWidth; 
 	ImgHeight = m_nHeight;
 
 	// 픽셀 데이터 공간 계산
