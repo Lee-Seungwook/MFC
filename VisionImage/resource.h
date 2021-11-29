@@ -15,8 +15,9 @@
 #define IDC_BUTTON_MAG                  1004
 #define IDC_SLIDER_WIDTH                1005
 #define IDC_SLIDER_HEIGHT               1006
-#define IDC_EDIT1                       1007
+#define IDC_EDIT_HEIGHT                 1007
 #define IDC_EDIT2                       1008
+#define IDC_EDIT_WIDTH                  1008
 
 // Next default values for new objects
 // 

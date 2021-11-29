@@ -58,6 +58,8 @@ END_MESSAGE_MAP()
 
 CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_VISIONIMAGE_DIALOG, pParent)
+	, m_nEditHeight(0)
+	, m_nEditWidth(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	width = 0;
@@ -74,6 +76,8 @@ void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_SLIDER_WIDTH, m_SliderWidth);
 	DDX_Control(pDX, IDC_SLIDER_HEIGHT, m_SliderHeight);
+	DDX_Text(pDX, IDC_EDIT_HEIGHT, m_nEditHeight);
+	DDX_Text(pDX, IDC_EDIT_WIDTH, m_nEditWidth);
 }
 
 BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
@@ -85,6 +89,8 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MAG, &CVisionImageDlg::OnClickedButtonMag)
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
+	ON_EN_CHANGE(IDC_EDIT_HEIGHT, &CVisionImageDlg::OnChangeEditHeight)
+	ON_EN_CHANGE(IDC_EDIT_WIDTH, &CVisionImageDlg::OnChangeEditWidth)
 END_MESSAGE_MAP()
 
 
@@ -128,6 +134,8 @@ BOOL CVisionImageDlg::OnInitDialog()
 	height = m_Image_rect.Height();
 
 	// 픽처 컨트롤의 좌표를 구함
+
+
 	GetDlgItem(IDC_IMAGE)->GetWindowRect(&m_Image_rect);
 	ScreenToClient(&m_Image_rect);
 
@@ -164,7 +172,7 @@ void CVisionImageDlg::OnPaint()
 	else if (m_bMagFlag == TRUE)
 	{
 		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, m_Image_rect.Width(), m_Image_rect.Height(), 
-			ImageCorX, ImageCorY, m_Image_rect.Width() / 4, m_Image_rect.Height() / 4); 
+			ImageCorX, ImageCorY, m_Image_rect.Width() / 2, m_Image_rect.Height() / 2);
 	}
 }
 
@@ -185,6 +193,7 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 		IppDibToImage(m_DibSrc, imgSrc);
 		IppResizeBilinear(imgSrc, imgDst, m_Image_rect.Width(), m_Image_rect.Height());
 		IppImageToDib(imgDst, m_DibRes);
+		
 		Invalidate(FALSE);
 	}
 	else if (m_DibSrc.GetBitCount() == 24)
@@ -223,26 +232,15 @@ void CVisionImageDlg::OnClickedButtonOpen()
 		
 		if (m_Dib.IsValid())
 		{
-			int RangeH, RangeW;
-			int FreqH, FreqW;
-			
-			width = m_Dib.ImgWidth; // 원본 영상의 가로
-			height = m_Dib.ImgHeight; // 원본 영상의 세로
-
-			RangeH = height;
-			RangeW = width;
-			m_SliderHeight.SetRange(0, RangeH);
-			m_SliderWidth.SetRange(0, RangeW);
-
-			FreqH = height / 8;
-			FreqW = width / 8;
-			
-			m_SliderHeight.SetTicFreq(FreqH);
-			m_SliderWidth.SetTicFreq(FreqW);
-
-			m_SliderHeight.SetPageSize(FreqH);
-			m_SliderWidth.SetPageSize(FreqW);
-		
+			m_DibSave = m_Dib;
+			if (m_Dib.GetBitCount() == 8)
+			{
+				
+			}
+			else if (m_Dib.GetBitCount() == 24)
+			{
+				
+			}
 			SetImage(m_Dib);
 		}
 		else
@@ -266,9 +264,9 @@ void CVisionImageDlg::OnClickedButtonSave()
 	if (IDOK == dlg.DoModal())
 	{
 		CString strPathName = dlg.GetPathName();
-		if (m_DibRes.IsValid())
+		if (m_DibSave.IsValid())
 		{
-			m_DibRes.Save(CT2A(strPathName));
+			m_DibSave.Save(CT2A(strPathName));
 		}
 		else
 		{
@@ -285,6 +283,27 @@ void CVisionImageDlg::OnClickedButtonMag()
 		m_bMagFlag = !m_bMagFlag;
 		m_bSaveFlag = FALSE;
 		Invalidate(FALSE);
+
+		width = m_Image_rect.Width();
+		height = m_Image_rect.Height();
+
+		int RangeH, RangeW;
+		int FreqH, FreqW;
+
+		RangeH = height - m_Image_rect.Height() / 2;
+		RangeW = width - m_Image_rect.Width() / 2;
+
+		m_SliderHeight.SetRange(0, RangeH);
+		m_SliderWidth.SetRange(0, RangeW);
+
+		FreqH = height / 8;
+		FreqW = width / 8;
+
+		m_SliderHeight.SetTicFreq(FreqH);
+		m_SliderWidth.SetTicFreq(FreqW);
+
+		m_SliderHeight.SetPageSize(FreqH);
+		m_SliderWidth.SetPageSize(FreqW);
 	}
 	else
 	{
@@ -300,6 +319,9 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nPos = m_SliderHeight.GetPos();
 		ImageCorY = nPos;
+
+		m_nEditHeight = ImageCorY;
+		UpdateData(FALSE);
 		Invalidate(FALSE);
 	}
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
@@ -313,7 +335,44 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nPos = m_SliderWidth.GetPos();
 		ImageCorX = nPos;
+
+		m_nEditWidth = ImageCorX;
+		UpdateData(FALSE);
 		Invalidate(FALSE);
 	}
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
+
+
+void CVisionImageDlg::OnChangeEditHeight()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// CDialogEx::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	UpdateData(TRUE);
+	m_SliderHeight.SetPos(m_nEditHeight);
+
+	Invalidate(FALSE);
+}
+
+
+void CVisionImageDlg::OnChangeEditWidth()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// CDialogEx::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData(TRUE);
+	m_SliderWidth.SetPos(m_nEditWidth);
+
+	Invalidate(FALSE);
+}
+
+
+// 이미지의 크기가 컨트롤의 크기보다 작으면 확대가 안됨...

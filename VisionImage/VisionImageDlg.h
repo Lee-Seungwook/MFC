@@ -30,6 +30,7 @@ public:
 	IppDib m_DibSrc;
 	IppDib m_DibRes;
 	IppDib m_Dib;
+	IppDib m_DibSave;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -62,4 +63,8 @@ public:
 	CSliderCtrl m_SliderHeight;
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	int m_nEditHeight;
+	int m_nEditWidth;
+	afx_msg void OnChangeEditHeight();
+	afx_msg void OnChangeEditWidth();
 };
