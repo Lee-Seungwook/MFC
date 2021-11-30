@@ -20,10 +20,17 @@ private:
 	BOOL m_bMoveFlag; // 확대하여 움직임을 명령하는 플래그
 	BOOL m_bSaveFlag; // 확대하여 움직였을 때의 좌표를 기억하기 위한 플래그
 	CPoint m_pRectTl, m_pRectBr;
+	float fRatio;
+
+	int Tempx;
 
 	int width, height; // 영상의 초기 너비와 높이
+
 	int ImageCorX, ImageCorY; // 확대 영상의 시작 좌표
+	int SmallCorX, SmallCorY; // 축소 영상의 좌표
+
 	int PrintW, PrintH; // 확대 영상의 움직인 좌표
+
 	int nOriginImgWidth, nOriginImgHeight; // 원본 영상의 너비와 높이
 	int nThumbImgWidth, nThumbImgHeight; // 출력 영상의 너비와 높이
 
@@ -71,6 +78,16 @@ public:
 	afx_msg void OnChangeEditHeight();
 	afx_msg void OnChangeEditWidth();
 	CStatic m_Picture;
-//	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	CStatic m_Thumbnail;
+
+	CImage m_img;
+	int m_nEndPosX, m_nEndPosY;
+	int m_nStartPosX, m_nStartPosY;
+	float m_fHorizontalRatio;
+
+	void OnDrawImage();
+	void DrawLine(CDC* pDC);
+	void DrawImage(CDC* pDC);
+
+
 };

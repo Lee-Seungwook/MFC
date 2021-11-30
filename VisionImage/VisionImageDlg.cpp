@@ -11,6 +11,13 @@
 #include "IppImage.h"
 #include "IppConvert.h"
 #include "ImageSize.h"
+#include "IppFilter.h"
+
+#include <gdiplus.h> //gdi+
+
+#pragma comment(lib, "gdiplus.lib") //gdi+
+using namespace Gdiplus;
+using namespace std;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -73,6 +80,19 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	PrintH = 0;
 	nThumbImgWidth = 0;
 	nThumbImgHeight = 0;
+
+	m_nStartPosX = 0;
+	m_nStartPosY = 0;
+	m_nEndPosX = 0;
+	m_nEndPosY = 0;
+	m_fHorizontalRatio = 0;
+
+	SmallCorX = 0;
+	SmallCorY = 0;
+
+	Tempx = 0;
+
+	fRatio = 1.0f;
 }
 
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -98,6 +118,7 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT_HEIGHT, &CVisionImageDlg::OnChangeEditHeight)
 	ON_EN_CHANGE(IDC_EDIT_WIDTH, &CVisionImageDlg::OnChangeEditWidth)
 //	ON_WM_ERASEBKGND()
+//ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -148,6 +169,9 @@ BOOL CVisionImageDlg::OnInitDialog()
 
 	GetDlgItem(IDC_SMALL_IMAGE)->GetWindowRect(&m_SmallPic);
 	ScreenToClient(&m_SmallPic);
+
+	m_pRectTl = m_Image_rect.TopLeft();
+	m_pRectBr = m_Image_rect.BottomRight();
 	
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -176,7 +200,7 @@ void CVisionImageDlg::OnPaint()
 	pen.CreatePen(PS_SOLID, 3, RGB(0, 255, 0));
 	CPen* oldPen = dc.SelectObject(&pen);
 	
-	dc.Rectangle(m_pRectTl.x, m_pRectTl.y, m_pRectBr.x, m_pRectBr.y);*/
+	dc.Rectangle(m_pRectTl.x - 5, m_pRectTl.y - 5, m_pRectBr.x + 5, m_pRectBr.y + 5);*/
 
 	// 픽처 컨트롤의 크기에 맞게 입력 영상의 복사본의 크기를 조절
 	CPaintDC dcPreview(GetDlgItem(IDC_IMAGE));
@@ -188,10 +212,19 @@ void CVisionImageDlg::OnPaint()
 	}
 	else if (m_bMagFlag == TRUE)
 	{
-		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, m_Position.Width(), m_Position.Height(),
-			ImageCorX, ImageCorY, m_Position.Width() / 4, m_Position.Height() / 4);
+		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, nThumbImgWidth, nThumbImgHeight,
+			ImageCorX, ImageCorY, nThumbImgWidth / 3, nThumbImgHeight / 3);
 
 		m_DibRes.Draw(dcSmall.m_hDC, 0, 0, m_SmallPic.Width(), m_SmallPic.Height());
+
+		CPen pen;
+		pen.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+		CPen* oldPen = dc.SelectObject(&pen);
+		dcSmall.MoveTo(SmallCorX, SmallCorY);
+		dcSmall.LineTo(PrintW, SmallCorY);
+		dcSmall.LineTo(PrintW, PrintH);
+		dcSmall.LineTo(SmallCorX, PrintH);
+		dcSmall.LineTo(SmallCorX, SmallCorY);
 	}
 	
 
@@ -208,10 +241,8 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 {
 	m_DibSrc = dib;
 
-	float fRatio = 1.0f;
-
-	int nPreviewHeight = m_Image_rect.Height() - 5;
-	int nPreviewWidth = m_Image_rect.Width() - 5;
+	int nPreviewHeight = m_Image_rect.Height();
+	int nPreviewWidth = m_Image_rect.Width();
 	
 	nOriginImgHeight = m_DibSrc.GetHeight();
 	nOriginImgWidth = m_DibSrc.GetWidth();
@@ -233,9 +264,11 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 
 	if (m_DibSrc.GetBitCount() == 8)
 	{
-		IppByteImage imgSrc, imgDst;
+		IppByteImage imgSrc, imgTmp, imgDst;
 		IppDibToImage(m_DibSrc, imgSrc);
-		IppResizeBilinear(imgSrc, imgDst, nThumbImgWidth, nThumbImgHeight);
+		IppFilterWeightedMean(imgSrc, imgTmp);
+		// IppResizeBilinear(imgSrc, imgDst, nThumbImgWidth, nThumbImgHeight);
+		IppResizeCubic(imgSrc, imgDst, nThumbImgWidth, nThumbImgHeight);
 		IppImageToDib(imgDst, m_DibRes);
 
 		Invalidate(TRUE);
@@ -261,8 +294,13 @@ void CVisionImageDlg::OnClickedButtonOpen()
 	if (IDOK == dlg.DoModal())
 	{
 		CString strPathName = dlg.GetPathName();
-		m_Dib.Load(CT2A(strPathName));
 		
+		m_Dib.Load(CT2A(strPathName)); // 큰 이미지 영상 설정 IppDib 사용
+
+		//m_img.Load(strPathName); // 작은 이미지 영상 설정 CImage 사용
+
+		// m_fHorizontalRatio = (float)m_SmallPic.Width() / m_img.GetWidth();
+
 		if (m_Dib.IsValid())
 		{
 			m_DibSave = m_Dib;
@@ -321,16 +359,23 @@ void CVisionImageDlg::OnClickedButtonMag()
 	{
 		m_bMagFlag = !m_bMagFlag;
 		m_bSaveFlag = FALSE;
+
+		SmallCorX = (float)ImageCorX * fRatio;
+		SmallCorY = (float)ImageCorY * fRatio;
+
+		PrintW = (float)nThumbImgWidth / 3 * fRatio;
+		PrintH = (float)nThumbImgHeight / 3 * fRatio;
+
 		Invalidate(TRUE);
 
-		width = m_Image_rect.Width();
-		height = m_Image_rect.Height();
+		width = nThumbImgWidth;
+		height = nThumbImgHeight;
 
 		int RangeH, RangeW;
 		int FreqH, FreqW;
 
-		RangeH = height - m_Image_rect.Height() / 4;
-		RangeW = width - m_Image_rect.Width() / 4;
+		RangeH = height - nThumbImgHeight / 3;
+		RangeW = width - nThumbImgWidth / 3;
 
 		m_SliderHeight.SetRange(0, RangeH);
 		m_SliderWidth.SetRange(0, RangeW);
@@ -346,6 +391,17 @@ void CVisionImageDlg::OnClickedButtonMag()
 
 		m_Thumbnail.GetWindowRect(&m_SmallPic);
 
+		/*float ratioW= (float)m_Image_rect.Width() / m_SmallPic.Width();
+		float ratioH = (float)m_Image_rect.Height() / m_SmallPic.Height();
+		m_nEndPosY = (nThumbImgHeight / 3) * ratioH;
+		m_nEndPosX = (nThumbImgWidth / 3) * ratioW;
+
+		m_nStartPosY = ImageCorY * ratioH;
+		m_nStartPosX = ImageCorX * ratioW;
+
+		m_nEndPosY = m_nStartPosY + (nThumbImgHeight / 3) * ratioH;
+		m_nEndPosX = m_nStartPosX + (nThumbImgWidth / 3) * ratioW;*/
+		
 		if (m_bMagFlag == FALSE)
 		{
 			m_SmallPic.SetRectEmpty();
@@ -365,10 +421,13 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nPos = m_SliderHeight.GetPos();
 		ImageCorY = nPos;
-
+		
+		SmallCorX = ImageCorX * fRatio;
 		m_nEditHeight = ImageCorY;
+
 		UpdateData(FALSE);
 		Invalidate(FALSE);
+		
 	}
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 }
@@ -382,9 +441,12 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		int nPos = m_SliderWidth.GetPos();
 		ImageCorX = nPos;
 
+		SmallCorY = ImageCorY * fRatio;
 		m_nEditWidth = ImageCorX;
+
 		UpdateData(FALSE);
 		Invalidate(FALSE);
+		
 	}
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
@@ -401,8 +463,6 @@ void CVisionImageDlg::OnChangeEditHeight()
 
 	UpdateData(TRUE);
 	m_SliderHeight.SetPos(m_nEditHeight);
-
-	Invalidate(FALSE);
 }
 
 
@@ -416,18 +476,58 @@ void CVisionImageDlg::OnChangeEditWidth()
 	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	UpdateData(TRUE);
 	m_SliderWidth.SetPos(m_nEditWidth);
-
-	Invalidate(FALSE);
 }
 
+void CVisionImageDlg::OnDrawImage()
+{
+	CClientDC dc(GetDlgItem(IDC_SMALL_IMAGE));
 
-// 이미지의 크기가 컨트롤의 크기보다 작으면 확대가 안됨...
+	CRect rect;
+	GetDlgItem(IDC_SMALL_IMAGE)->GetClientRect(&rect);
 
-//BOOL CVisionImageDlg::OnEraseBkgnd(CDC* pDC)
-//{
-//	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-//	CBrush br;
-//	br.CreateHatchBrush(HS_DIAGCROSS, RGB(255, 255, 255));
-//	FillRect(pDC, &br);
-//	return TRUE;;
-//}
+	CDC memDC;
+	CBitmap *pOldBitmap, bitmap;
+
+	memDC.CreateCompatibleDC(&dc);
+
+	bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
+
+	pOldBitmap = memDC.SelectObject(&bitmap);
+
+	memDC.PatBlt(0, 0, rect.Width(), rect.Height(), BLACKNESS);
+
+	DrawImage(&memDC);
+	DrawLine(&memDC);
+
+	dc.BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+
+	memDC.SelectObject(pOldBitmap);
+
+	memDC.DeleteDC();
+	bitmap.DeleteObject();
+}
+
+void CVisionImageDlg::DrawLine(CDC* pDC)
+{
+	CPen *pOldPen, pen;
+	pen.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+
+	pOldPen = pDC->SelectObject(&pen);
+
+	pDC->MoveTo(m_nStartPosX, m_nStartPosY);
+	pDC->LineTo(m_nEndPosX, m_nStartPosY);
+	pDC->LineTo(m_nEndPosX, m_nEndPosY);
+	pDC->LineTo(m_nStartPosX, m_nEndPosY);
+
+	pDC->SelectObject(pOldPen);
+
+	pen.DeleteObject();
+}
+
+void CVisionImageDlg::DrawImage(CDC* pDC)
+{
+	CRect rect;
+	GetDlgItem(IDC_SMALL_IMAGE)->GetClientRect(&rect);
+
+	m_img.Draw(pDC->GetSafeHdc(), rect);
+}
