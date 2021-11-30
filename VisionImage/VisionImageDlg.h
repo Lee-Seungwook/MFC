@@ -12,17 +12,20 @@ class CVisionImageDlg : public CDialogEx
 {
 private:
 	CRect m_Image_rect; // Picture Control의 위치를 기억할 변수
-	CRect m_Position; // 픽처 컨트롤 좌표를 얻는 변수
+	CRect m_Position; // 이미지를 출력하는 변수
+	CRect m_SmallPic; // 확대 시 부분 화면을 출력하기 위한 변수
 	CImage m_Image; // 사용자가 선택한 이미지 객체를 구성할 변수
 	
 	BOOL m_bMagFlag; // 확대를 명령하는 플래그
 	BOOL m_bMoveFlag; // 확대하여 움직임을 명령하는 플래그
 	BOOL m_bSaveFlag; // 확대하여 움직였을 때의 좌표를 기억하기 위한 플래그
-	CPoint m_pMousePt;
+	CPoint m_pRectTl, m_pRectBr;
 
 	int width, height; // 영상의 초기 너비와 높이
 	int ImageCorX, ImageCorY; // 확대 영상의 시작 좌표
-	int SaveX, SaveY; // 확대 영상의 움직인 좌표
+	int PrintW, PrintH; // 확대 영상의 움직인 좌표
+	int nOriginImgWidth, nOriginImgHeight; // 원본 영상의 너비와 높이
+	int nThumbImgWidth, nThumbImgHeight; // 출력 영상의 너비와 높이
 
 // 생성입니다.
 public:
@@ -67,4 +70,7 @@ public:
 	int m_nEditWidth;
 	afx_msg void OnChangeEditHeight();
 	afx_msg void OnChangeEditWidth();
+	CStatic m_Picture;
+//	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	CStatic m_Thumbnail;
 };
