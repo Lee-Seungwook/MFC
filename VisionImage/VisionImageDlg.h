@@ -19,6 +19,7 @@ private:
 	BOOL m_bMagFlag; // 확대를 명령하는 플래그
 	BOOL m_bMoveFlag; // 확대하여 움직임을 명령하는 플래그
 	BOOL m_bSaveFlag; // 확대하여 움직였을 때의 좌표를 기억하기 위한 플래그
+	BOOL m_bCursorOnImage; // 픽처 컨트롤 위에 마우스가 위치할때를 기억하기 위한 플래그
 	CPoint m_pRectTl, m_pRectBr;
 
 	float fRatio;
@@ -77,8 +78,8 @@ public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	int m_nEditHeight;
 	int m_nEditWidth;
-	afx_msg void OnChangeEditHeight();
-	afx_msg void OnChangeEditWidth();
+//	afx_msg void OnChangeEditHeight();
+//	afx_msg void OnChangeEditWidth();
 	CStatic m_Picture;
 	CStatic m_Thumbnail;
 
@@ -94,4 +95,8 @@ public:
 	void DrawImage(CDC* pDC);
 
 
+//	afx_msg void OnNcMouseHover(UINT nFlags, CPoint point);
+	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
+	afx_msg void OnMouseLeave();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };

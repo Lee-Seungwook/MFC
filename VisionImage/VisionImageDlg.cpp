@@ -95,6 +95,8 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	fRatio = 1.0f;
 	SfRatioW = 1.0f;
 	SfRatioH = 1.0f;
+
+	m_bCursorOnImage = FALSE;
 }
 
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -117,10 +119,14 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MAG, &CVisionImageDlg::OnClickedButtonMag)
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
-	ON_EN_CHANGE(IDC_EDIT_HEIGHT, &CVisionImageDlg::OnChangeEditHeight)
-	ON_EN_CHANGE(IDC_EDIT_WIDTH, &CVisionImageDlg::OnChangeEditWidth)
+//	ON_EN_CHANGE(IDC_EDIT_HEIGHT, &CVisionImageDlg::OnChangeEditHeight)
+//	ON_EN_CHANGE(IDC_EDIT_WIDTH, &CVisionImageDlg::OnChangeEditWidth)
 //	ON_WM_ERASEBKGND()
 //ON_WM_ERASEBKGND()
+//ON_WM_NCMOUSEHOVER()
+ON_WM_MOUSEHOVER()
+ON_WM_MOUSELEAVE()
+ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -470,31 +476,31 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 }
 
 
-void CVisionImageDlg::OnChangeEditHeight()
-{
-	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
-	// CDialogEx::OnInitDialog() 함수를 재지정 
-	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
-	// 이 알림 메시지를 보내지 않습니다.
+//void CVisionImageDlg::OnChangeEditHeight()
+//{
+//	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+//	// CDialogEx::OnInitDialog() 함수를 재지정 
+//	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+//	// 이 알림 메시지를 보내지 않습니다.
+//
+//	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+//
+//	UpdateData(TRUE);
+//	m_SliderHeight.SetPos(m_nEditHeight);
+//}
 
-	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
 
-	UpdateData(TRUE);
-	m_SliderHeight.SetPos(m_nEditHeight);
-}
-
-
-void CVisionImageDlg::OnChangeEditWidth()
-{
-	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
-	// CDialogEx::OnInitDialog() 함수를 재지정 
-	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
-	// 이 알림 메시지를 보내지 않습니다.
-
-	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	UpdateData(TRUE);
-	m_SliderWidth.SetPos(m_nEditWidth);
-}
+//void CVisionImageDlg::OnChangeEditWidth()
+//{
+//	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+//	// CDialogEx::OnInitDialog() 함수를 재지정 
+//	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+//	// 이 알림 메시지를 보내지 않습니다.
+//
+//	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+//	UpdateData(TRUE);
+//	//m_SliderWidth.SetPos(m_nEditWidth);
+//}
 
 //void CVisionImageDlg::OnDrawImage()
 //{
@@ -559,3 +565,56 @@ void CVisionImageDlg::DrawLine()
 //
 //	m_img.Draw(pDC->GetSafeHdc(), rect);
 //}
+
+//void CVisionImageDlg::OnNcMouseHover(UINT nFlags, CPoint point)
+//{
+//	// 이 기능을 사용하려면 Windows 2000 이상이 필요합니다.
+//	// _WIN32_WINNT 및 WINVER 기호는 0x0500보다 크거나 같아야 합니다.
+//	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+//
+//	CDialogEx::OnNcMouseHover(nFlags, point);
+//}
+
+
+void CVisionImageDlg::OnMouseHover(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CDialogEx::OnMouseHover(nFlags, point);
+}
+
+
+void CVisionImageDlg::OnMouseLeave()
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CDialogEx::OnMouseLeave();
+}
+
+
+void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CRect rt;
+
+	((CStatic*)GetDlgItem(IDC_IMAGE))->GetWindowRect(&rt);
+	ScreenToClient(&rt);
+
+	int m_ptX, m_ptY;
+	if (rt.PtInRect(point))
+	{
+		m_ptX = point.x * fRatio;
+		m_ptY = point.y * fRatio;
+
+		m_nEditWidth = m_ptX;
+		m_nEditHeight = m_ptY;
+
+
+		UpdateData(FALSE);
+	}
+	else
+	{
+
+	}
+	CDialogEx::OnMouseMove(nFlags, point);
+}
