@@ -20,7 +20,9 @@ private:
 	BOOL m_bMoveFlag; // 확대하여 움직임을 명령하는 플래그
 	BOOL m_bSaveFlag; // 확대하여 움직였을 때의 좌표를 기억하기 위한 플래그
 	CPoint m_pRectTl, m_pRectBr;
+
 	float fRatio;
+	float SfRatioW, SfRatioH;
 
 	int Tempx;
 
@@ -85,8 +87,10 @@ public:
 	int m_nStartPosX, m_nStartPosY;
 	float m_fHorizontalRatio;
 
+	ULONG_PTR m_gdiplusToken;
+
 	void OnDrawImage();
-	void DrawLine(CDC* pDC);
+	void DrawLine();
 	void DrawImage(CDC* pDC);
 
 

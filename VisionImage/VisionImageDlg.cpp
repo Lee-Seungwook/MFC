@@ -93,6 +93,8 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	Tempx = 0;
 
 	fRatio = 1.0f;
+	SfRatioW = 1.0f;
+	SfRatioH = 1.0f;
 }
 
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -172,6 +174,9 @@ BOOL CVisionImageDlg::OnInitDialog()
 
 	m_pRectTl = m_Image_rect.TopLeft();
 	m_pRectBr = m_Image_rect.BottomRight();
+
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
 	
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -217,13 +222,24 @@ void CVisionImageDlg::OnPaint()
 
 		m_DibRes.Draw(dcSmall.m_hDC, 0, 0, m_SmallPic.Width(), m_SmallPic.Height());
 
+		/*CPaintDC dce(GetDlgItem(IDC_SMALL_IMAGE));
+
+		Graphics g(dce);
+
+		Pen pen(Color(255, 255, 0, 0), 3);
+
+		g.DrawLine(&pen, SmallCorX, SmallCorY, SmallCorX + PrintW, SmallCorY);
+		g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY, SmallCorX + PrintW, SmallCorY - PrintH);
+		g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY - PrintH, SmallCorX, SmallCorY - PrintH);
+		g.DrawLine(&pen, SmallCorX, SmallCorY - PrintH, SmallCorX, SmallCorY);*/
+
 		CPen pen;
-		pen.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-		CPen* oldPen = dc.SelectObject(&pen);
+		pen.CreatePen(PS_SOLID, 3, RGB(0, 255, 0));
+		CPen* oldPen = dcSmall.SelectObject(&pen);
 		dcSmall.MoveTo(SmallCorX, SmallCorY);
-		dcSmall.LineTo(PrintW, SmallCorY);
-		dcSmall.LineTo(PrintW, PrintH);
-		dcSmall.LineTo(SmallCorX, PrintH);
+		dcSmall.LineTo(SmallCorX + PrintW, SmallCorY);
+		dcSmall.LineTo(SmallCorX + PrintW, SmallCorY - PrintH);
+		dcSmall.LineTo(SmallCorX, SmallCorY - PrintH);
 		dcSmall.LineTo(SmallCorX, SmallCorY);
 	}
 	
@@ -360,13 +376,11 @@ void CVisionImageDlg::OnClickedButtonMag()
 		m_bMagFlag = !m_bMagFlag;
 		m_bSaveFlag = FALSE;
 
-		SmallCorX = (float)ImageCorX * fRatio;
-		SmallCorY = (float)ImageCorY * fRatio;
-
-		PrintW = (float)nThumbImgWidth / 3 * fRatio;
-		PrintH = (float)nThumbImgHeight / 3 * fRatio;
-
-		Invalidate(TRUE);
+		SmallCorX = 0;
+		SmallCorY = m_SmallPic.Height();
+		
+		PrintW = m_SmallPic.Width() / 3;
+		PrintH = m_SmallPic.Height() / 3;
 
 		width = nThumbImgWidth;
 		height = nThumbImgHeight;
@@ -390,6 +404,10 @@ void CVisionImageDlg::OnClickedButtonMag()
 		m_SliderWidth.SetPageSize(FreqW);
 
 		m_Thumbnail.GetWindowRect(&m_SmallPic);
+
+		SfRatioW = (float)(m_SmallPic.Width() - m_SmallPic.Width() / 3) / RangeW;
+		SfRatioH = (float)(m_SmallPic.Height() - m_SmallPic.Height() / 3) / RangeH;
+		Invalidate(TRUE);
 
 		/*float ratioW= (float)m_Image_rect.Width() / m_SmallPic.Width();
 		float ratioH = (float)m_Image_rect.Height() / m_SmallPic.Height();
@@ -421,12 +439,12 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nPos = m_SliderHeight.GetPos();
 		ImageCorY = nPos;
-		
-		SmallCorX = ImageCorX * fRatio;
 		m_nEditHeight = ImageCorY;
 
+		SmallCorY = m_SmallPic.Height() - static_cast<int>((float)ImageCorY * SfRatioH);
+
 		UpdateData(FALSE);
-		Invalidate(FALSE);
+		Invalidate(TRUE);
 		
 	}
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
@@ -440,12 +458,12 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nPos = m_SliderWidth.GetPos();
 		ImageCorX = nPos;
-
-		SmallCorY = ImageCorY * fRatio;
 		m_nEditWidth = ImageCorX;
 
+		SmallCorX = static_cast<int>((float)ImageCorX * SfRatioW);
+
 		UpdateData(FALSE);
-		Invalidate(FALSE);
+		Invalidate(TRUE);
 		
 	}
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
@@ -478,38 +496,38 @@ void CVisionImageDlg::OnChangeEditWidth()
 	m_SliderWidth.SetPos(m_nEditWidth);
 }
 
-void CVisionImageDlg::OnDrawImage()
+//void CVisionImageDlg::OnDrawImage()
+//{
+//	CClientDC dc(GetDlgItem(IDC_SMALL_IMAGE));
+//
+//	CRect rect;
+//	GetDlgItem(IDC_SMALL_IMAGE)->GetClientRect(&rect);
+//
+//	CDC memDC;
+//	CBitmap *pOldBitmap, bitmap;
+//
+//	memDC.CreateCompatibleDC(&dc);
+//
+//	bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
+//
+//	pOldBitmap = memDC.SelectObject(&bitmap);
+//
+//	memDC.PatBlt(0, 0, rect.Width(), rect.Height(), BLACKNESS);
+//
+//	DrawImage(&memDC);
+//	DrawLine(&memDC);
+//
+//	dc.BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+//
+//	memDC.SelectObject(pOldBitmap);
+//
+//	memDC.DeleteDC();
+//	bitmap.DeleteObject();
+//}
+//
+void CVisionImageDlg::DrawLine()
 {
-	CClientDC dc(GetDlgItem(IDC_SMALL_IMAGE));
-
-	CRect rect;
-	GetDlgItem(IDC_SMALL_IMAGE)->GetClientRect(&rect);
-
-	CDC memDC;
-	CBitmap *pOldBitmap, bitmap;
-
-	memDC.CreateCompatibleDC(&dc);
-
-	bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
-
-	pOldBitmap = memDC.SelectObject(&bitmap);
-
-	memDC.PatBlt(0, 0, rect.Width(), rect.Height(), BLACKNESS);
-
-	DrawImage(&memDC);
-	DrawLine(&memDC);
-
-	dc.BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
-
-	memDC.SelectObject(pOldBitmap);
-
-	memDC.DeleteDC();
-	bitmap.DeleteObject();
-}
-
-void CVisionImageDlg::DrawLine(CDC* pDC)
-{
-	CPen *pOldPen, pen;
+	/*CPen *pOldPen, pen;
 	pen.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
 
 	pOldPen = pDC->SelectObject(&pen);
@@ -521,13 +539,23 @@ void CVisionImageDlg::DrawLine(CDC* pDC)
 
 	pDC->SelectObject(pOldPen);
 
-	pen.DeleteObject();
-}
+	pen.DeleteObject();*/
+	CClientDC dc(GetDlgItem(IDC_SMALL_IMAGE));
 
-void CVisionImageDlg::DrawImage(CDC* pDC)
-{
-	CRect rect;
-	GetDlgItem(IDC_SMALL_IMAGE)->GetClientRect(&rect);
+	Graphics g(dc);
 
-	m_img.Draw(pDC->GetSafeHdc(), rect);
+	Pen pen(Color(255, 255, 0, 0), 3);
+
+	 g.DrawLine(&pen, SmallCorX, SmallCorY, SmallCorX + PrintW, SmallCorY);
+	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY, SmallCorX + PrintW, SmallCorY - PrintH);
+	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY - PrintH, SmallCorX, SmallCorY - PrintH);
+	 g.DrawLine(&pen, SmallCorX, SmallCorY - PrintH, SmallCorX, SmallCorY);
 }
+//
+//void CVisionImageDlg::DrawImage(CDC* pDC)
+//{
+//	CRect rect;
+//	GetDlgItem(IDC_SMALL_IMAGE)->GetClientRect(&rect);
+//
+//	m_img.Draw(pDC->GetSafeHdc(), rect);
+//}
