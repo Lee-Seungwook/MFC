@@ -71,9 +71,7 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	width = 0;
 	height = 0;
-	m_bMagFlag = FALSE;
-	m_bMoveFlag = FALSE;
-	m_bSaveFlag = FALSE;
+	
 	ImageCorX = 0;
 	ImageCorY = 0;
 	PrintW = 0;
@@ -95,8 +93,14 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	fRatio = 1.0f;
 	SfRatioW = 1.0f;
 	SfRatioH = 1.0f;
-
+	fPtRatio = 1.0f;
+	
+	m_bMagFlag = FALSE;
+	m_bMoveFlag = FALSE;
+	m_bSaveFlag = FALSE;
 	m_bCursorOnImage = FALSE;
+	m_bCurImgLoad = FALSE;
+	m_bCurImgMag = FALSE;
 }
 
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -270,7 +274,8 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 	nOriginImgWidth = m_DibSrc.GetWidth();
 
 	fRatio = min((float)nPreviewWidth / (float)nOriginImgWidth, (float)nPreviewHeight / (float)nOriginImgHeight);
-	
+	fPtRatio = min((float)nOriginImgWidth / (float)nPreviewWidth, (float)nOriginImgHeight / (float)nPreviewHeight);
+
 	if (fRatio < 1)
 	{
 		//썸네일이 픽처컨트롤 보다 크다면 픽처컨트롤의 크기만큼 축소한다. 축소는 썸네일 이미지의 비율을 유지하도록 한다.
@@ -326,6 +331,9 @@ void CVisionImageDlg::OnClickedButtonOpen()
 		if (m_Dib.IsValid())
 		{
 			m_DibSave = m_Dib;
+
+			m_bCurImgLoad = TRUE;
+
 			if (m_Dib.GetBitCount() == 8)
 			{
 				
@@ -381,7 +389,8 @@ void CVisionImageDlg::OnClickedButtonMag()
 	{
 		m_bMagFlag = !m_bMagFlag;
 		m_bSaveFlag = FALSE;
-
+		m_bCurImgMag = !m_bCurImgMag;
+		
 		SmallCorX = 0;
 		SmallCorY = m_SmallPic.Height();
 		
@@ -445,7 +454,7 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nPos = m_SliderHeight.GetPos();
 		ImageCorY = nPos;
-		m_nEditHeight = ImageCorY;
+		// m_nEditHeight = ImageCorY;
 
 		SmallCorY = m_SmallPic.Height() - static_cast<int>((float)ImageCorY * SfRatioH);
 
@@ -464,7 +473,7 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nPos = m_SliderWidth.GetPos();
 		ImageCorX = nPos;
-		m_nEditWidth = ImageCorX;
+		// m_nEditWidth = ImageCorX;
 
 		SmallCorX = static_cast<int>((float)ImageCorX * SfRatioW);
 
@@ -601,20 +610,46 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 	ScreenToClient(&rt);
 
 	int m_ptX, m_ptY;
-	if (rt.PtInRect(point))
+	if (m_bCurImgLoad == TRUE)
 	{
-		m_ptX = point.x * fRatio;
-		m_ptY = point.y * fRatio;
+		if (m_bCurImgMag == FALSE)
+		{
+			if (rt.PtInRect(point))
+			{ 
+				m_ptX = point.x * fPtRatio; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
+				m_ptY = point.y * fPtRatio;
 
-		m_nEditWidth = m_ptX;
-		m_nEditHeight = m_ptY;
+				m_nEditWidth = m_ptX;
+				m_nEditHeight = m_ptY;
 
 
-		UpdateData(FALSE);
+				UpdateData(FALSE);
+			}
+			else
+			{
+
+			}
+		}
+		else if (m_bCurImgMag == TRUE)
+		{
+			if (rt.PtInRect(point)) // 비슷하게는 나옴...
+			{
+				float fPtMagRatio = fPtRatio / 3;
+				m_ptX = point.x * fPtMagRatio + ImageCorX * fPtRatio; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
+				m_ptY = point.y * fPtMagRatio + ImageCorY * fPtRatio;
+
+				m_nEditWidth = m_ptX;
+				m_nEditHeight = m_ptY;
+
+
+				UpdateData(FALSE);
+			}
+			else
+			{
+
+			}
+		}
 	}
-	else
-	{
-
-	}
+	
 	CDialogEx::OnMouseMove(nFlags, point);
 }

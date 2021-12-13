@@ -20,10 +20,13 @@ private:
 	BOOL m_bMoveFlag; // 확대하여 움직임을 명령하는 플래그
 	BOOL m_bSaveFlag; // 확대하여 움직였을 때의 좌표를 기억하기 위한 플래그
 	BOOL m_bCursorOnImage; // 픽처 컨트롤 위에 마우스가 위치할때를 기억하기 위한 플래그
+	BOOL m_bCurImgLoad; // 이미지 불러 왔을 때의 마우스 좌표를 출력하기 위한 플래그
+	BOOL m_bCurImgMag; // 이미지 확대 했을 때의 마우스 좌표를 출력하기 위한 플래그
 	CPoint m_pRectTl, m_pRectBr;
 
-	float fRatio;
+	float fRatio; // 원본 영상의 축소 비율
 	float SfRatioW, SfRatioH;
+	float fPtRatio; // 마우스 좌표를 출력하기 위한 비율
 
 	int Tempx;
 
