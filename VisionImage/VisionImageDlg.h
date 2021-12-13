@@ -40,6 +40,8 @@ private:
 	int nOriginImgWidth, nOriginImgHeight; // 원본 영상의 너비와 높이
 	int nThumbImgWidth, nThumbImgHeight; // 출력 영상의 너비와 높이
 
+	BYTE **p; // 영상의 픽셀 정보
+
 // 생성입니다.
 public:
 	CVisionImageDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
@@ -81,8 +83,6 @@ public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	int m_nEditHeight;
 	int m_nEditWidth;
-//	afx_msg void OnChangeEditHeight();
-//	afx_msg void OnChangeEditWidth();
 	CStatic m_Picture;
 	CStatic m_Thumbnail;
 
@@ -93,13 +93,8 @@ public:
 
 	ULONG_PTR m_gdiplusToken;
 
-	void OnDrawImage();
 	void DrawLine();
-	void DrawImage(CDC* pDC);
-
-
-//	afx_msg void OnNcMouseHover(UINT nFlags, CPoint point);
-	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
-	afx_msg void OnMouseLeave();
+	
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	int m_nPixels;
 };

@@ -67,6 +67,7 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_VISIONIMAGE_DIALOG, pParent)
 	, m_nEditHeight(0)
 	, m_nEditWidth(0)
+	, m_nPixels(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	width = 0;
@@ -112,6 +113,7 @@ void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_WIDTH, m_nEditWidth);
 	DDX_Control(pDX, IDC_IMAGE, m_Picture);
 	DDX_Control(pDX, IDC_SMALL_IMAGE, m_Thumbnail);
+	DDX_Text(pDX, IDC_EDIT_PIXELS, m_nPixels);
 }
 
 BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
@@ -123,14 +125,7 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_MAG, &CVisionImageDlg::OnClickedButtonMag)
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
-//	ON_EN_CHANGE(IDC_EDIT_HEIGHT, &CVisionImageDlg::OnChangeEditHeight)
-//	ON_EN_CHANGE(IDC_EDIT_WIDTH, &CVisionImageDlg::OnChangeEditWidth)
-//	ON_WM_ERASEBKGND()
-//ON_WM_ERASEBKGND()
-//ON_WM_NCMOUSEHOVER()
-ON_WM_MOUSEHOVER()
-ON_WM_MOUSELEAVE()
-ON_WM_MOUSEMOVE()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -289,14 +284,17 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 		nThumbImgHeight = (int)(nOriginImgHeight*0.99);
 	}
 
+
 	if (m_DibSrc.GetBitCount() == 8)
 	{
 		IppByteImage imgSrc, imgTmp, imgDst;
 		IppDibToImage(m_DibSrc, imgSrc);
 		IppFilterWeightedMean(imgSrc, imgTmp);
 		// IppResizeBilinear(imgSrc, imgDst, nThumbImgWidth, nThumbImgHeight);
-		IppResizeCubic(imgSrc, imgDst, nThumbImgWidth, nThumbImgHeight);
+		IppResizeCubic(imgTmp, imgDst, nThumbImgWidth, nThumbImgHeight);
 		IppImageToDib(imgDst, m_DibRes);
+
+		p = imgSrc.GetPixels2D();
 
 		Invalidate(TRUE);
 	}
@@ -453,7 +451,7 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	if (m_SliderHeight.GetSafeHwnd() == pScrollBar->GetSafeHwnd())
 	{
 		int nPos = m_SliderHeight.GetPos();
-		ImageCorY = nPos;
+		ImageCorY = (nThumbImgHeight * 2 / 3) - nPos;
 		// m_nEditHeight = ImageCorY;
 
 		SmallCorY = m_SmallPic.Height() - static_cast<int>((float)ImageCorY * SfRatioH);
@@ -484,62 +482,6 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
-
-//void CVisionImageDlg::OnChangeEditHeight()
-//{
-//	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
-//	// CDialogEx::OnInitDialog() 함수를 재지정 
-//	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
-//	// 이 알림 메시지를 보내지 않습니다.
-//
-//	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
-//
-//	UpdateData(TRUE);
-//	m_SliderHeight.SetPos(m_nEditHeight);
-//}
-
-
-//void CVisionImageDlg::OnChangeEditWidth()
-//{
-//	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
-//	// CDialogEx::OnInitDialog() 함수를 재지정 
-//	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
-//	// 이 알림 메시지를 보내지 않습니다.
-//
-//	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
-//	UpdateData(TRUE);
-//	//m_SliderWidth.SetPos(m_nEditWidth);
-//}
-
-//void CVisionImageDlg::OnDrawImage()
-//{
-//	CClientDC dc(GetDlgItem(IDC_SMALL_IMAGE));
-//
-//	CRect rect;
-//	GetDlgItem(IDC_SMALL_IMAGE)->GetClientRect(&rect);
-//
-//	CDC memDC;
-//	CBitmap *pOldBitmap, bitmap;
-//
-//	memDC.CreateCompatibleDC(&dc);
-//
-//	bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
-//
-//	pOldBitmap = memDC.SelectObject(&bitmap);
-//
-//	memDC.PatBlt(0, 0, rect.Width(), rect.Height(), BLACKNESS);
-//
-//	DrawImage(&memDC);
-//	DrawLine(&memDC);
-//
-//	dc.BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
-//
-//	memDC.SelectObject(pOldBitmap);
-//
-//	memDC.DeleteDC();
-//	bitmap.DeleteObject();
-//}
-//
 void CVisionImageDlg::DrawLine()
 {
 	/*CPen *pOldPen, pen;
@@ -566,40 +508,6 @@ void CVisionImageDlg::DrawLine()
 	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY - PrintH, SmallCorX, SmallCorY - PrintH);
 	 g.DrawLine(&pen, SmallCorX, SmallCorY - PrintH, SmallCorX, SmallCorY);
 }
-//
-//void CVisionImageDlg::DrawImage(CDC* pDC)
-//{
-//	CRect rect;
-//	GetDlgItem(IDC_SMALL_IMAGE)->GetClientRect(&rect);
-//
-//	m_img.Draw(pDC->GetSafeHdc(), rect);
-//}
-
-//void CVisionImageDlg::OnNcMouseHover(UINT nFlags, CPoint point)
-//{
-//	// 이 기능을 사용하려면 Windows 2000 이상이 필요합니다.
-//	// _WIN32_WINNT 및 WINVER 기호는 0x0500보다 크거나 같아야 합니다.
-//	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-//
-//	CDialogEx::OnNcMouseHover(nFlags, point);
-//}
-
-
-void CVisionImageDlg::OnMouseHover(UINT nFlags, CPoint point)
-{
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
-	CDialogEx::OnMouseHover(nFlags, point);
-}
-
-
-void CVisionImageDlg::OnMouseLeave()
-{
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
-	CDialogEx::OnMouseLeave();
-}
-
 
 void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -609,7 +517,8 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 	((CStatic*)GetDlgItem(IDC_IMAGE))->GetWindowRect(&rt);
 	ScreenToClient(&rt);
 
-	int m_ptX, m_ptY;
+	int m_ptX = 0;
+	int	m_ptY = 0;
 	if (m_bCurImgLoad == TRUE)
 	{
 		if (m_bCurImgMag == FALSE)
@@ -621,7 +530,7 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 				m_nEditWidth = m_ptX;
 				m_nEditHeight = m_ptY;
-
+				// m_nPixels = p[m_ptX][m_ptY]; - 메모리 오류
 
 				UpdateData(FALSE);
 			}
@@ -636,11 +545,11 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 			{
 				float fPtMagRatio = fPtRatio / 3;
 				m_ptX = point.x * fPtMagRatio + ImageCorX * fPtRatio; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
-				m_ptY = point.y * fPtMagRatio + ImageCorY * fPtRatio;
+				m_ptY = point.y * fPtMagRatio + (nThumbImgHeight * 2 / 3) * fPtRatio - ImageCorY * fPtRatio;
 
 				m_nEditWidth = m_ptX;
 				m_nEditHeight = m_ptY;
-
+				// m_nPixels = p[m_ptX][m_ptY]; - 메모리 오류
 
 				UpdateData(FALSE);
 			}
