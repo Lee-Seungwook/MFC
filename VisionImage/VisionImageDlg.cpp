@@ -240,9 +240,9 @@ void CVisionImageDlg::OnPaint()
 
 		m_DibRes.Draw(dcSmall.m_hDC, 0, 0, m_SmallPic.Width(), m_SmallPic.Height());
 
-		/*CPaintDC dce(GetDlgItem(IDC_SMALL_IMAGE));
+		CPaintDC dce(GetDlgItem(IDC_SMALL_IMAGE));
 
-		Graphics g(dce);
+		/*Graphics g(dce);
 
 		Pen pen(Color(255, 255, 0, 0), 3);
 
@@ -411,8 +411,10 @@ void CVisionImageDlg::OnClickedButtonMag()
 		m_bSaveFlag = FALSE;
 		m_bCurImgMag = !m_bCurImgMag;
 		
+		ImageCorY = (nThumbImgHeight * 2 / 3);
+
 		SmallCorX = 0;
-		SmallCorY = m_SmallPic.Height();
+		SmallCorY = m_SmallPic.Height() * 1 / 3;
 		
 		PrintW = m_SmallPic.Width() / 3;
 		PrintH = m_SmallPic.Height() / 3;
@@ -518,6 +520,8 @@ void CVisionImageDlg::DrawLine()
 	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY, SmallCorX + PrintW, SmallCorY - PrintH);
 	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY - PrintH, SmallCorX, SmallCorY - PrintH);
 	 g.DrawLine(&pen, SmallCorX, SmallCorY - PrintH, SmallCorX, SmallCorY);
+
+	 Invalidate(TRUE);
 }
 
 void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
