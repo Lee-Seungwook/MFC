@@ -22,6 +22,7 @@ private:
 	BOOL m_bCursorOnImage; // 픽처 컨트롤 위에 마우스가 위치할때를 기억하기 위한 플래그
 	BOOL m_bCurImgLoad; // 이미지 불러 왔을 때의 마우스 좌표를 출력하기 위한 플래그
 	BOOL m_bCurImgMag; // 이미지 확대 했을 때의 마우스 좌표를 출력하기 위한 플래그
+	BOOL m_bIOFlag; // 작업 이전, 이후 영상 전환 플래그
 	CPoint m_pRectTl, m_pRectBr;
 
 	CSliderCtrl m_SliderWidth;
@@ -69,6 +70,7 @@ public:
 	IppDib m_Dib;
 	IppDib m_DibSave;
 	IppDib dib;
+	IppDib dibPrev;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -102,4 +104,7 @@ public:
 	void SetImage(IppDib& dib); // 초기 이미지 설정하여 출력
 	void DrawLine(); // 미리보기 출력 영역 사각형 그리기
 	void DbcFilterGaussian(IppByteImage& imgWork); // 가우시안 필터 다이얼로그 활성
+	void DbcInverse(IppByteImage& imgWork); // 영상 반전
+
+	afx_msg void OnClickedButtonInoutput();
 };

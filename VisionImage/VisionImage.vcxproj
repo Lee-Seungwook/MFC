@@ -197,6 +197,7 @@
     <ClInclude Include="ImageSize.h" />
     <ClInclude Include="IppConvert.h" />
     <ClInclude Include="IppDib.h" />
+    <ClInclude Include="IppEnhance.h" />
     <ClInclude Include="IppFilter.h" />
     <ClInclude Include="IppImage.h" />
     <ClInclude Include="pch.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="IppConvert.cpp" />
     <ClCompile Include="IppDib.cpp" />
     <ClCompile Include="IppDibJpg.cpp" />
+    <ClCompile Include="IppEnhance.cpp" />
     <ClCompile Include="IppFilter.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

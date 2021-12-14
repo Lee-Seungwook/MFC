@@ -12,6 +12,8 @@
 #include "IppConvert.h"
 #include "ImageSize.h"
 #include "IppFilter.h"
+#include "IppEnhance.h"
+
 #include "GaussianDlg.h"
 
 #include <gdiplus.h> //gdi+
@@ -111,6 +113,7 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	m_bCursorOnImage = FALSE;
 	m_bCurImgLoad = FALSE;
 	m_bCurImgMag = FALSE;
+	m_bIOFlag = FALSE;
 }
 
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
@@ -137,6 +140,7 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_WM_HSCROLL()
 	ON_WM_MOUSEMOVE()
 	ON_LBN_DBLCLK(IDC_LIST_FILTER, &CVisionImageDlg::OnLbnDblclkListFilter)
+	ON_BN_CLICKED(IDC_BUTTON_INOUTPUT, &CVisionImageDlg::OnClickedButtonInoutput)
 END_MESSAGE_MAP()
 
 
@@ -195,6 +199,7 @@ BOOL CVisionImageDlg::OnInitDialog()
 	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);*/
 
 	m_ListBox.InsertString(0, _T("Filter Gaussian"));
+	m_ListBox.InsertString(1, _T("Inverse"));
 	
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -331,6 +336,15 @@ void CVisionImageDlg::DbcFilterGaussian(IppByteImage& imgWork)
 	}
 }
 
+void CVisionImageDlg::DbcInverse(IppByteImage& imgWork)
+{
+	IppByteImage imgSrc = imgWork;
+	IppInverse(imgSrc);
+	IppImageToDib(imgSrc, dib);
+
+	SetImage(dib);
+}
+
 void CVisionImageDlg::OnClickedButtonOpen()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -356,7 +370,7 @@ void CVisionImageDlg::OnClickedButtonOpen()
 
 			if (m_Dib.GetBitCount() == 8)
 			{
-				
+				dib = m_Dib;
 			}
 			else if (m_Dib.GetBitCount() == 24)
 			{
@@ -366,9 +380,15 @@ void CVisionImageDlg::OnClickedButtonOpen()
 				IppDibToImage(m_Dib, imgSrc);
 				imgDst.Convert(imgSrc);
 				IppImageToDib(imgDst, m_Dib);
+
+				dib = m_Dib;
 			}
 
 			SetImage(m_Dib);
+			GetDlgItem(IDC_LIST_FILTER)->EnableWindow(TRUE);
+			GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
+			GetDlgItem(IDC_BUTTON_MAG)->EnableWindow(TRUE);
+			GetDlgItem(IDC_BUTTON_INOUTPUT)->EnableWindow(TRUE);
 		}
 		else
 		{
@@ -584,7 +604,8 @@ void CVisionImageDlg::OnLbnDblclkListFilter()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	int index = m_ListBox.GetCurSel();
 	
-	IppDib DibSrc = m_DibSave;
+	dibPrev = dib;
+	IppDib DibSrc = dib;
 	IppDib DibWork;
 	IppByteImage imgWork, imgRes, imgTmp;
 
@@ -612,7 +633,25 @@ void CVisionImageDlg::OnLbnDblclkListFilter()
 	{
 	case 0:
 		DbcFilterGaussian(imgWork);
+		break;
+
+	case 1:
+		DbcInverse(imgWork);
+		break;
+
 	default:
 		break;
 	}
+}
+
+
+void CVisionImageDlg::OnClickedButtonInoutput()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	if (m_bIOFlag == FALSE)
+		SetImage(dibPrev);
+	else if (m_bIOFlag == TRUE)
+		SetImage(dib);
+
+	m_bIOFlag = !m_bIOFlag;
 }
