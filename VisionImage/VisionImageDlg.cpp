@@ -12,12 +12,21 @@
 #include "IppConvert.h"
 #include "ImageSize.h"
 #include "IppFilter.h"
+#include "GaussianDlg.h"
 
 #include <gdiplus.h> //gdi+
-
 #pragma comment(lib, "gdiplus.lib") //gdi+
+
 using namespace Gdiplus;
 using namespace std;
+
+#define CONVERT_DIB_TO_BYTEIMAGE(m_Dib, img) \
+	IppByteImage img; \
+	IppDibToImage(m_Dib, img);
+
+#define CONVERT_IMAGE_TO_DIB(img, dib) \
+	IppDib dib; \
+	IppImageToDib(img, dib);
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -114,6 +123,7 @@ void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_IMAGE, m_Picture);
 	DDX_Control(pDX, IDC_SMALL_IMAGE, m_Thumbnail);
 	DDX_Text(pDX, IDC_EDIT_PIXELS, m_nPixels);
+	DDX_Control(pDX, IDC_LIST_FILTER, m_ListBox);
 }
 
 BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
@@ -126,6 +136,7 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
 	ON_WM_MOUSEMOVE()
+	ON_LBN_DBLCLK(IDC_LIST_FILTER, &CVisionImageDlg::OnLbnDblclkListFilter)
 END_MESSAGE_MAP()
 
 
@@ -180,8 +191,10 @@ BOOL CVisionImageDlg::OnInitDialog()
 	m_pRectTl = m_Image_rect.TopLeft();
 	m_pRectBr = m_Image_rect.BottomRight();
 
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
+	/*Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);*/
+
+	m_ListBox.InsertString(0, _T("Filter Gaussian"));
 	
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -304,9 +317,18 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 	}
 }
 
-void CVisionImageDlg::SetFlag()
+void CVisionImageDlg::DbcFilterGaussian(IppByteImage& imgWork)
 {
+	CGaussianDlg dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		IppByteImage imgSrc = imgWork;
+		IppFloatImage imgDst;
+		IppFilterGaussian(imgSrc, imgDst, dlg.m_fSigma);
+		IppImageToDib(imgDst, dib);
 
+		SetImage(dib);
+	}
 }
 
 void CVisionImageDlg::OnClickedButtonOpen()
@@ -421,17 +443,6 @@ void CVisionImageDlg::OnClickedButtonMag()
 		SfRatioW = (float)(m_SmallPic.Width() - m_SmallPic.Width() / 3) / RangeW;
 		SfRatioH = (float)(m_SmallPic.Height() - m_SmallPic.Height() / 3) / RangeH;
 		Invalidate(TRUE);
-
-		/*float ratioW= (float)m_Image_rect.Width() / m_SmallPic.Width();
-		float ratioH = (float)m_Image_rect.Height() / m_SmallPic.Height();
-		m_nEndPosY = (nThumbImgHeight / 3) * ratioH;
-		m_nEndPosX = (nThumbImgWidth / 3) * ratioW;
-
-		m_nStartPosY = ImageCorY * ratioH;
-		m_nStartPosX = ImageCorX * ratioW;
-
-		m_nEndPosY = m_nStartPosY + (nThumbImgHeight / 3) * ratioH;
-		m_nEndPosX = m_nStartPosX + (nThumbImgWidth / 3) * ratioW;*/
 		
 		if (m_bMagFlag == FALSE)
 		{
@@ -561,4 +572,43 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 	}
 	
 	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+
+void CVisionImageDlg::OnLbnDblclkListFilter()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	int index = m_ListBox.GetCurSel();
+	
+	IppDib DibSrc = m_DibSave;
+	IppDib DibWork;
+	IppByteImage imgWork, imgRes, imgTmp;
+
+	if (DibSrc.GetBitCount() == 24)
+	{
+		IppRgbImage imgSrc;
+		IppByteImage imgDst;
+
+		IppDibToImage(DibSrc, imgSrc);
+		imgDst.Convert(imgSrc);
+		IppImageToDib(imgDst, DibWork);
+	}
+	else if (DibSrc.GetBitCount() == 8)
+	{
+		DibWork = DibSrc;
+	}
+	else
+	{
+		AfxMessageBox(_T("잘못된 파일 형식입니다."));
+	}
+
+	IppDibToImage(DibWork, imgWork);
+
+	switch (index)
+	{
+	case 0:
+		DbcFilterGaussian(imgWork);
+	default:
+		break;
+	}
 }

@@ -24,6 +24,16 @@ private:
 	BOOL m_bCurImgMag; // 이미지 확대 했을 때의 마우스 좌표를 출력하기 위한 플래그
 	CPoint m_pRectTl, m_pRectBr;
 
+	CSliderCtrl m_SliderWidth;
+	CSliderCtrl m_SliderHeight;
+
+	CStatic m_Picture;
+	CStatic m_Thumbnail;
+
+	CImage m_img;
+
+	CListBox m_ListBox;
+
 	float fRatio; // 원본 영상의 축소 비율
 	float SfRatioW, SfRatioH;
 	float fPtRatio; // 마우스 좌표를 출력하기 위한 비율
@@ -40,6 +50,15 @@ private:
 	int nOriginImgWidth, nOriginImgHeight; // 원본 영상의 너비와 높이
 	int nThumbImgWidth, nThumbImgHeight; // 출력 영상의 너비와 높이
 
+	int m_nEditHeight;
+	int m_nEditWidth;
+
+	int m_nPixels;
+
+	int m_nEndPosX, m_nEndPosY;
+	int m_nStartPosX, m_nStartPosY;
+	float m_fHorizontalRatio;
+
 	BYTE **p; // 영상의 픽셀 정보
 
 // 생성입니다.
@@ -49,6 +68,7 @@ public:
 	IppDib m_DibRes;
 	IppDib m_Dib;
 	IppDib m_DibSave;
+	IppDib dib;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -73,28 +93,13 @@ public:
 	afx_msg void OnClickedButtonOpen();
 	afx_msg void OnClickedButtonSave();
 	afx_msg void OnClickedButtonMag();
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnLbnDblclkListFilter();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 
 public:
 	void SetImage(IppDib& dib); // 초기 이미지 설정하여 출력
-	void SetFlag(); // 아직 사용 X
-	CSliderCtrl m_SliderWidth;
-	CSliderCtrl m_SliderHeight;
-	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	int m_nEditHeight;
-	int m_nEditWidth;
-	CStatic m_Picture;
-	CStatic m_Thumbnail;
-
-	CImage m_img;
-	int m_nEndPosX, m_nEndPosY;
-	int m_nStartPosX, m_nStartPosY;
-	float m_fHorizontalRatio;
-
-	ULONG_PTR m_gdiplusToken;
-
-	void DrawLine();
-	
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	int m_nPixels;
+	void DrawLine(); // 미리보기 출력 영역 사각형 그리기
+	void DbcFilterGaussian(IppByteImage& imgWork); // 가우시안 필터 다이얼로그 활성
 };

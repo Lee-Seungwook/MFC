@@ -193,6 +193,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GaussianDlg.h" />
     <ClInclude Include="ImageSize.h" />
     <ClInclude Include="IppConvert.h" />
     <ClInclude Include="IppDib.h" />
@@ -207,6 +208,7 @@
     <ClInclude Include="VisionImageDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GaussianDlg.cpp" />
     <ClCompile Include="ImageSize.cpp" />
     <ClCompile Include="IppConvert.cpp" />
     <ClCompile Include="IppDib.cpp" />
