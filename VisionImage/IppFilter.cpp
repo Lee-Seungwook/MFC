@@ -150,3 +150,70 @@ void IppFilterMedian(IppByteImage& imgSrc, IppByteImage& imgDst)
 			pDst[j][i] = m[4];
 		}
 }
+
+// 라플라시안 필터
+void IppFilterLaplacian(IppByteImage& imgSrc, IppByteImage& imgDst)
+{
+	int w = imgSrc.GetWidth();
+	int h = imgSrc.GetHeight();
+
+	imgDst.CreateImage(w, h);
+
+	BYTE** pSrc = imgSrc.GetPixels2D();
+	BYTE** pDst = imgDst.GetPixels2D();
+
+	int i, j, sum;
+	for (j = 1; j < h - 1; j++)
+		for (i = 1; i < w - 1; i++)
+		{
+			sum = pSrc[j - 1][i] + pSrc[j][i - 1] + pSrc[j + 1][i] + pSrc[j][i + 1]
+				- 4 * pSrc[j][i];
+
+			pDst[j][i] = static_cast<BYTE>(limit(sum + 128));
+		}
+}
+
+// 언샤프마스크 필터
+void IppFilterUnsharpMask(IppByteImage& imgSrc, IppByteImage& imgDst)
+{
+	int w = imgSrc.GetWidth();
+	int h = imgSrc.GetHeight();
+
+	imgDst = imgSrc;
+
+	BYTE** pSrc = imgSrc.GetPixels2D();
+	BYTE** pDst = imgDst.GetPixels2D();
+
+	int i, j, sum;
+	for (j = 1; j < h - 1; j++)
+		for (i = 1; i < w - 1; i++)
+		{
+			sum = 5 * pSrc[j][i]
+				- pSrc[j - 1][i] - pSrc[j][i - 1] - pSrc[j + 1][i] - pSrc[j][i + 1];
+
+			pDst[j][i] = static_cast<BYTE>(limit(sum));
+		}
+}
+
+// 하이부스트 필터
+void IppFilterHighboost(IppByteImage& imgSrc, IppByteImage& imgDst, float alpha)
+{
+	int w = imgSrc.GetWidth();
+	int h = imgSrc.GetHeight();
+
+	imgDst = imgSrc;
+
+	BYTE** pSrc = imgSrc.GetPixels2D();
+	BYTE** pDst = imgDst.GetPixels2D();
+
+	int i, j;
+	float sum;
+	for (j = 1; j < h - 1; j++)
+		for (i = 1; i < w - 1; i++)
+		{
+			sum = (4 + alpha) * pSrc[j][i]
+				- pSrc[j - 1][i] - pSrc[j][i - 1] - pSrc[j + 1][i] - pSrc[j][i + 1];
+
+			pDst[j][i] = static_cast<BYTE>(limit(sum + 0.5f));
+		}
+}

@@ -8,6 +8,9 @@
 #define IDD_VISIONIMAGE_DIALOG          102
 #define IDR_MAINFRAME                   128
 #define IDD_GAUSSIAN                    130
+#define IDD_CONTRAST                    131
+#define IDD_BRIGHTNESS                  132
+#define IDD_GAMMACORRECTION             133
 #define IDC_BUTTON_OPEN                 1000
 #define IDC_BUTTON2                     1001
 #define IDC_BUTTON_SAVE                 1001
@@ -24,6 +27,12 @@
 #define IDC_SIGMA_SLIDER                1012
 #define IDC_SIGMA_EDIT                  1013
 #define IDC_BUTTON_INOUTPUT             1014
+#define IDC_BRIGHTNESS_SLIDER           1015
+#define IDC_BRIGHTNESS_EDIT             1016
+#define IDC_CONTRAST_SLIDER             1017
+#define IDC_CONTRAST_EDIT               1018
+#define IDC_GAMMA_SLIDER                1019
+#define IDC_GAMMA_EDIT                  1020
 
 // Next default values for new objects
 // 
@@ -31,7 +40,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

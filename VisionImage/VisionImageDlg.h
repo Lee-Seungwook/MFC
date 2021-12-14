@@ -99,12 +99,15 @@ public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnLbnDblclkListFilter();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnClickedButtonInoutput();
 
 public:
 	void SetImage(IppDib& dib); // 초기 이미지 설정하여 출력
 	void DrawLine(); // 미리보기 출력 영역 사각형 그리기
 	void DbcFilterGaussian(IppByteImage& imgWork); // 가우시안 필터 다이얼로그 활성
 	void DbcInverse(IppByteImage& imgWork); // 영상 반전
-
-	afx_msg void OnClickedButtonInoutput();
+	void DbcContrast(IppByteImage& imgWork); // 영상 명암비 조절
+	void DbcBrightness(IppByteImage& imgWork); // 영상 밝기 조절
+	void DbcGammaCorrection(IppByteImage& imgWork); // 영상 감마 조절
+	
 };

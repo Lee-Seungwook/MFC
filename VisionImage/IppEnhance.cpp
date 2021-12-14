@@ -48,6 +48,8 @@ void IppGammaCorrection(IppByteImage& img, float gamma)
 
 	for (int i = 0; i < size; i++)
 	{
+
+
 		p[i] = static_cast<BYTE>(limit(gamma_table[p[i]] * 255 + 0.5f));
 	}
 }

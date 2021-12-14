@@ -192,7 +192,10 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BrightnessDlg.h" />
+    <ClInclude Include="ContrastDlg.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GammaCorrectionDlg.h" />
     <ClInclude Include="GaussianDlg.h" />
     <ClInclude Include="ImageSize.h" />
     <ClInclude Include="IppConvert.h" />
@@ -209,6 +212,9 @@
     <ClInclude Include="VisionImageDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BrightnessDlg.cpp" />
+    <ClCompile Include="ContrastDlg.cpp" />
+    <ClCompile Include="GammaCorrectionDlg.cpp" />
     <ClCompile Include="GaussianDlg.cpp" />
     <ClCompile Include="ImageSize.cpp" />
     <ClCompile Include="IppConvert.cpp" />

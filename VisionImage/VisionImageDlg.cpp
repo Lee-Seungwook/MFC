@@ -15,6 +15,9 @@
 #include "IppEnhance.h"
 
 #include "GaussianDlg.h"
+#include "BrightnessDlg.h"
+#include "ContrastDlg.h"
+#include "GammaCorrectionDlg.h"
 
 #include <gdiplus.h> //gdi+
 #pragma comment(lib, "gdiplus.lib") //gdi+
@@ -200,7 +203,10 @@ BOOL CVisionImageDlg::OnInitDialog()
 
 	m_ListBox.InsertString(0, _T("Filter Gaussian"));
 	m_ListBox.InsertString(1, _T("Inverse"));
-	
+	m_ListBox.InsertString(2, _T("Brightness"));
+	m_ListBox.InsertString(3, _T("Contrast"));
+	m_ListBox.InsertString(4, _T("GammaCorrection"));
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -343,6 +349,45 @@ void CVisionImageDlg::DbcInverse(IppByteImage& imgWork)
 	IppImageToDib(imgSrc, dib);
 
 	SetImage(dib);
+}
+
+void CVisionImageDlg::DbcBrightness(IppByteImage& imgWork)
+{
+	CBrightnessDlg dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		IppByteImage imgSrc = imgWork;
+		IppBrightness(imgSrc, dlg.m_nBrightness);
+		IppImageToDib(imgSrc, dib);
+
+		SetImage(dib);
+	}
+}
+
+void CVisionImageDlg::DbcContrast(IppByteImage& imgWork)
+{
+	CContrastDlg dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		IppByteImage imgSrc = imgWork;
+		IppBrightness(imgSrc, dlg.m_nContrast);
+		IppImageToDib(imgSrc, dib);
+
+		SetImage(dib);
+	}
+}
+
+void CVisionImageDlg::DbcGammaCorrection(IppByteImage& imgWork)
+{
+	CGammaCorrectionDlg dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		IppByteImage imgSrc = imgWork;
+		IppBrightness(imgSrc, dlg.m_fGamma);
+		IppImageToDib(imgSrc, dib);
+
+		SetImage(dib);
+	}
 }
 
 void CVisionImageDlg::OnClickedButtonOpen()
@@ -637,6 +682,18 @@ void CVisionImageDlg::OnLbnDblclkListFilter()
 
 	case 1:
 		DbcInverse(imgWork);
+		break;
+
+	case 2:
+		DbcBrightness(imgWork);
+		break;
+
+	case 3:
+		DbcContrast(imgWork);
+		break;
+
+	case 4:
+		DbcGammaCorrection(imgWork);
 		break;
 
 	default:
