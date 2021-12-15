@@ -206,6 +206,9 @@ BOOL CVisionImageDlg::OnInitDialog()
 	m_ListBox.InsertString(2, _T("Brightness"));
 	m_ListBox.InsertString(3, _T("Contrast"));
 	m_ListBox.InsertString(4, _T("GammaCorrection"));
+	m_ListBox.InsertString(5, _T("Filter Laplacian"));
+	m_ListBox.InsertString(6, _T("Filter UnsharpMask"));
+	m_ListBox.InsertString(7, _T("Filter Hightboost"));
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -388,6 +391,37 @@ void CVisionImageDlg::DbcGammaCorrection(IppByteImage& imgWork)
 
 		SetImage(dib);
 	}
+}
+
+void CVisionImageDlg::DbcLaplacian(IppByteImage& imgWork)
+{
+	IppByteImage imgSrc, imgDst;
+	imgSrc = imgWork;
+	IppFilterLaplacian(imgSrc, imgDst);
+	IppImageToDib(imgDst, dib);
+
+	SetImage(dib);
+}
+
+void CVisionImageDlg::DbcUnsharpMask(IppByteImage& imgWork)
+{
+	IppByteImage imgSrc, imgDst;
+	imgSrc = imgWork;
+	IppFilterUnsharpMask(imgSrc, imgDst);
+	IppImageToDib(imgDst, dib);
+
+	SetImage(dib);
+}
+
+void CVisionImageDlg::DbcHighboost(IppByteImage& imgWork)
+{
+	IppByteImage imgSrc, imgDst;
+	imgSrc = imgWork;
+	float alpha = 1.2f;
+	IppFilterHighboost(imgSrc, imgDst, alpha);
+	IppImageToDib(imgDst, dib);
+
+	SetImage(dib);
 }
 
 void CVisionImageDlg::OnClickedButtonOpen()
@@ -694,6 +728,18 @@ void CVisionImageDlg::OnLbnDblclkListFilter()
 
 	case 4:
 		DbcGammaCorrection(imgWork);
+		break;
+
+	case 5:
+		DbcLaplacian(imgWork);
+		break;
+
+	case 6:
+		DbcUnsharpMask(imgWork);
+		break;
+
+	case 7:
+		DbcHighboost(imgWork);
 		break;
 
 	default:

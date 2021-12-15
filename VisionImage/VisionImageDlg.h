@@ -109,5 +109,7 @@ public:
 	void DbcContrast(IppByteImage& imgWork); // 영상 명암비 조절
 	void DbcBrightness(IppByteImage& imgWork); // 영상 밝기 조절
 	void DbcGammaCorrection(IppByteImage& imgWork); // 영상 감마 조절
-	
+	void DbcLaplacian(IppByteImage& imgWork); // 라플라시안 필터
+	void DbcUnsharpMask(IppByteImage& imgWork); // 언샤프마스크 필터
+	void DbcHighboost(IppByteImage& imgWork); // 하이부스트 필터
 };
