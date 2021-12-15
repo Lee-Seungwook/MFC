@@ -7,6 +7,10 @@
 #include "IppDib.h"
 #include "IppImage.h"
 
+#include "Tab1.h"
+#include "Tab2.h"
+#include "Tab3.h"
+
 // CVisionImageDlg 대화 상자
 class CVisionImageDlg : public CDialogEx
 {
@@ -72,6 +76,16 @@ public:
 	IppDib dib;
 	IppDib dibPrev;
 
+	CTab1 pDlg1;
+	CTab2 pDlg2;
+	CTab3 pDlg3;
+
+	// CTab1 *Tab1;
+
+	CTabCtrl m_TabRecipe;
+
+	CWnd* m_pwndShow;
+
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_VISIONIMAGE_DIALOG };
@@ -100,6 +114,7 @@ public:
 	afx_msg void OnLbnDblclkListFilter();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnClickedButtonInoutput();
+	afx_msg void OnTcnSelchangeTabRecipe(NMHDR *pNMHDR, LRESULT *pResult);
 
 public:
 	void SetImage(IppDib& dib); // 초기 이미지 설정하여 출력
@@ -112,4 +127,8 @@ public:
 	void DbcLaplacian(IppByteImage& imgWork); // 라플라시안 필터
 	void DbcUnsharpMask(IppByteImage& imgWork); // 언샤프마스크 필터
 	void DbcHighboost(IppByteImage& imgWork); // 하이부스트 필터
+
+	void GetIndex(int& GetIndex); // 인덱스를 받기 위함
+	
+
 };

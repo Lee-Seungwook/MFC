@@ -11,6 +11,9 @@
 #define IDD_CONTRAST                    131
 #define IDD_BRIGHTNESS                  132
 #define IDD_GAMMACORRECTION             133
+#define IDD_TAB1                        134
+#define IDD_TAB2                        135
+#define IDD_TAB3                        136
 #define IDC_BUTTON_OPEN                 1000
 #define IDC_BUTTON2                     1001
 #define IDC_BUTTON_SAVE                 1001
@@ -33,14 +36,17 @@
 #define IDC_CONTRAST_EDIT               1018
 #define IDC_GAMMA_SLIDER                1019
 #define IDC_GAMMA_EDIT                  1020
+#define IDC_TAB_RECIPE                  1021
+#define IDC_LIST_F                      1022
+#define IDC_LIST_I                      1023
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        132
+#define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1021
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
