@@ -13,11 +13,13 @@
 #include "ImageSize.h"
 #include "IppFilter.h"
 #include "IppEnhance.h"
+#include "IppSegment.h"
 
 #include "GaussianDlg.h"
 #include "BrightnessDlg.h"
 #include "ContrastDlg.h"
 #include "GammaCorrectionDlg.h"
+#include "BinarizationDlg.h"
 
 #include "Tab1.h"
 
@@ -445,6 +447,25 @@ void CVisionImageDlg::DbcHighboost(IppByteImage& imgWork)
 	SetImage(dib);
 }
 
+void CVisionImageDlg::DbcBinary(IppDib& DibWork)
+{
+	IppDib Dib = DibWork;
+	CBinarizationDlg dlg;
+	dlg.SetImage(Dib);
+
+	IppByteImage imgSrc;
+	IppDibToImage(Dib, imgSrc);
+
+	if (dlg.DoModal() == IDOK)
+	{
+		IppByteImage imgDst;
+		IppBinarization(imgSrc, imgDst, dlg.m_nThreshold);
+		IppImageToDib(imgDst, dib);
+
+		SetImage(dib);
+	}
+}
+
 void CVisionImageDlg::OnClickedButtonOpen()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -812,7 +833,7 @@ void CVisionImageDlg::OnTcnSelchangeTabRecipe(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-void CVisionImageDlg::GetIndex(int& GetIndex)
+void CVisionImageDlg::GetIndexF(int GetIndex)
 {
 	int index = GetIndex;
 
@@ -874,6 +895,74 @@ void CVisionImageDlg::GetIndex(int& GetIndex)
 	case 7:
 		DbcHighboost(imgWork);
 		break;
+
+	default:
+		break;
+	}
+}
+
+void CVisionImageDlg::GetIndexI(int GetIndex)
+{
+	int index = GetIndex;
+
+	dibPrev = dib;
+	IppDib DibSrc = dib;
+	IppDib DibWork;
+	IppByteImage imgWork, imgRes, imgTmp;
+
+	if (DibSrc.GetBitCount() == 24)
+	{
+		IppRgbImage imgSrc;
+		IppByteImage imgDst;
+
+		IppDibToImage(DibSrc, imgSrc);
+		imgDst.Convert(imgSrc);
+		IppImageToDib(imgDst, DibWork);
+	}
+	else if (DibSrc.GetBitCount() == 8)
+	{
+		DibWork = DibSrc;
+	}
+	else
+	{
+		AfxMessageBox(_T("잘못된 파일 형식입니다."));
+	}
+
+	IppDibToImage(DibWork, imgWork);
+
+	switch (index)
+	{
+	case 0:
+		DbcBinary(DibWork);
+		break;
+
+	/*case 1:
+		DbcInverse(imgWork);
+		break;
+
+	case 2:
+		DbcBrightness(imgWork);
+		break;
+
+	case 3:
+		DbcContrast(imgWork);
+		break;
+
+	case 4:
+		DbcGammaCorrection(imgWork);
+		break;
+
+	case 5:
+		DbcLaplacian(imgWork);
+		break;
+
+	case 6:
+		DbcUnsharpMask(imgWork);
+		break;
+
+	case 7:
+		DbcHighboost(imgWork);
+		break;*/
 
 	default:
 		break;

@@ -25,7 +25,7 @@ public:
 	afx_msg void OnBnClickedCancel();
 	CListBox m_ListFilter;
 	virtual BOOL OnInitDialog();
-//	afx_msg void OnDblclkListF();
-//	afx_msg void OnLbnDblclkListF();
+
+
 	afx_msg void OnLbnDblclkListF();
 };

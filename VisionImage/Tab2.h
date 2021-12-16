@@ -23,4 +23,7 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
+	virtual BOOL OnInitDialog();
+	CListBox m_ListBinary;
+	afx_msg void OnLbnDblclkListI();
 };

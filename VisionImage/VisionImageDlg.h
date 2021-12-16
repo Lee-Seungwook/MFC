@@ -127,8 +127,9 @@ public:
 	void DbcLaplacian(IppByteImage& imgWork); // 라플라시안 필터
 	void DbcUnsharpMask(IppByteImage& imgWork); // 언샤프마스크 필터
 	void DbcHighboost(IppByteImage& imgWork); // 하이부스트 필터
+	void DbcBinary(IppDib& dibWork); // 이진화
 
-	void GetIndex(int& GetIndex); // 인덱스를 받기 위함
-	
+	void GetIndexF(int GetIndex); // Tab1의 리스트 박스 인덱스를 받기 위함
+	void GetIndexI(int GetIndex); // Tab2의 리스트 박스 인덱스를 받기 위함
 
 };
