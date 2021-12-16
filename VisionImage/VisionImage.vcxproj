@@ -203,6 +203,7 @@
     <ClInclude Include="IppConvert.h" />
     <ClInclude Include="IppDib.h" />
     <ClInclude Include="IppEnhance.h" />
+    <ClInclude Include="IppFeature.h" />
     <ClInclude Include="IppFilter.h" />
     <ClInclude Include="IppImage.h" />
     <ClInclude Include="IppSegment.h" />
@@ -228,6 +229,7 @@
     <ClCompile Include="IppDib.cpp" />
     <ClCompile Include="IppDibJpg.cpp" />
     <ClCompile Include="IppEnhance.cpp" />
+    <ClCompile Include="IppFeature.cpp" />
     <ClCompile Include="IppFilter.cpp" />
     <ClCompile Include="IppSegment.cpp" />
     <ClCompile Include="pch.cpp">

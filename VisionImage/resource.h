@@ -14,7 +14,6 @@
 #define IDD_TAB1                        134
 #define IDD_TAB2                        135
 #define IDD_TAB3                        136
-#define IDD_DIALOG1                     140
 #define IDD_BINARIZATION                140
 #define IDC_BUTTON_OPEN                 1000
 #define IDC_BUTTON2                     1001
@@ -44,6 +43,8 @@
 #define IDC_THRESHOLD_SLIDER            1024
 #define IDC_THRESHOLD_EDIT              1025
 #define IDC_IMAGE_PREVIEW               1026
+#define IDC_LIST_M                      1027
+#define IDC_LIST_D                      1027
 
 // Next default values for new objects
 // 
@@ -51,7 +52,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        142
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

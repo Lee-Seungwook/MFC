@@ -111,7 +111,7 @@ public:
 	afx_msg void OnClickedButtonMag();
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnLbnDblclkListFilter();
+	// afx_msg void OnLbnDblclkListFilter();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnClickedButtonInoutput();
 	afx_msg void OnTcnSelchangeTabRecipe(NMHDR *pNMHDR, LRESULT *pResult);
@@ -119,6 +119,7 @@ public:
 public:
 	void SetImage(IppDib& dib); // 초기 이미지 설정하여 출력
 	void DrawLine(); // 미리보기 출력 영역 사각형 그리기
+
 	void DbcFilterGaussian(IppByteImage& imgWork); // 가우시안 필터 다이얼로그 활성
 	void DbcInverse(IppByteImage& imgWork); // 영상 반전
 	void DbcContrast(IppByteImage& imgWork); // 영상 명암비 조절
@@ -127,9 +128,15 @@ public:
 	void DbcLaplacian(IppByteImage& imgWork); // 라플라시안 필터
 	void DbcUnsharpMask(IppByteImage& imgWork); // 언샤프마스크 필터
 	void DbcHighboost(IppByteImage& imgWork); // 하이부스트 필터
+
 	void DbcBinary(IppDib& dibWork); // 이진화
+
+	void DbcEdgeRoberts(IppByteImage& imgWork); // 엣지 로버츠
+	void DbcEdgePrewitt(IppByteImage& imgWork); // 엣지 프리윗
+	void DbcEdgeSobel(IppByteImage& imgWork); // 엣지 소벨
 
 	void GetIndexF(int GetIndex); // Tab1의 리스트 박스 인덱스를 받기 위함
 	void GetIndexI(int GetIndex); // Tab2의 리스트 박스 인덱스를 받기 위함
+	void GetIndexD(int GetIndex); // Tab3의 리스트 박스 인덱스를 받기 위함
 
 };

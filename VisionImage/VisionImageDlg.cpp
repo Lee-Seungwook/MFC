@@ -14,6 +14,7 @@
 #include "IppFilter.h"
 #include "IppEnhance.h"
 #include "IppSegment.h"
+#include "IppFeature.h"
 
 #include "GaussianDlg.h"
 #include "BrightnessDlg.h"
@@ -147,7 +148,7 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
 	ON_WM_MOUSEMOVE()
-	ON_LBN_DBLCLK(IDC_LIST_FILTER, &CVisionImageDlg::OnLbnDblclkListFilter)
+	// ON_LBN_DBLCLK(IDC_LIST_FILTER, &CVisionImageDlg::OnLbnDblclkListFilter)
 	ON_BN_CLICKED(IDC_BUTTON_INOUTPUT, &CVisionImageDlg::OnClickedButtonInoutput)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_RECIPE, &CVisionImageDlg::OnTcnSelchangeTabRecipe)
 END_MESSAGE_MAP()
@@ -209,7 +210,7 @@ BOOL CVisionImageDlg::OnInitDialog()
 
 	this->m_TabRecipe.InsertItem(0, _T("F"));
 	this->m_TabRecipe.InsertItem(1, _T("I"));
-	this->m_TabRecipe.InsertItem(2, _T("F"));
+	this->m_TabRecipe.InsertItem(2, _T("D"));
 
 	CRect rect;
 	this->m_TabRecipe.GetClientRect(&rect);
@@ -221,17 +222,6 @@ BOOL CVisionImageDlg::OnInitDialog()
 
 	this->pDlg3.Create(IDD_TAB3, &this->m_TabRecipe);
 	this->pDlg3.SetWindowPos(NULL, 5, 25, rect.Width() - 10, rect.Height() - 30, SWP_NOZORDER);
-
-	m_ListBox.InsertString(0, _T("Filter Gaussian"));
-	m_ListBox.InsertString(1, _T("Inverse"));
-	m_ListBox.InsertString(2, _T("Brightness"));
-	m_ListBox.InsertString(3, _T("Contrast"));
-	m_ListBox.InsertString(4, _T("GammaCorrection"));
-	m_ListBox.InsertString(5, _T("Filter Laplacian"));
-	m_ListBox.InsertString(6, _T("Filter UnsharpMask"));
-	m_ListBox.InsertString(7, _T("Filter Hightboost"));
-
-
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -464,6 +454,37 @@ void CVisionImageDlg::DbcBinary(IppDib& DibWork)
 
 		SetImage(dib);
 	}
+}
+
+void CVisionImageDlg::DbcEdgeRoberts(IppByteImage& imgWork)
+{
+	IppByteImage imgSrc, imgDst;
+	imgSrc = imgWork;
+	IppEdgeRoberts(imgSrc, imgDst);
+	IppImageToDib(imgDst, dib);
+
+	SetImage(dib);
+	
+}
+
+void CVisionImageDlg::DbcEdgePrewitt(IppByteImage& imgWork)
+{
+	IppByteImage imgSrc, imgDst;
+	imgSrc = imgWork;
+	IppEdgePrewitt(imgSrc, imgDst);
+	IppImageToDib(imgDst, dib);
+
+	SetImage(dib);
+}
+
+void CVisionImageDlg::DbcEdgeSobel(IppByteImage& imgWork)
+{
+	IppByteImage imgSrc, imgDst;
+	imgSrc = imgWork;
+	IppEdgeSobel(imgSrc, imgDst);
+	IppImageToDib(imgDst, dib);
+
+	SetImage(dib);
 }
 
 void CVisionImageDlg::OnClickedButtonOpen()
@@ -720,74 +741,74 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 }
 
 
-void CVisionImageDlg::OnLbnDblclkListFilter()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	int index = m_ListBox.GetCurSel();
-	
-	dibPrev = dib;
-	IppDib DibSrc = dib;
-	IppDib DibWork;
-	IppByteImage imgWork, imgRes, imgTmp;
-
-	if (DibSrc.GetBitCount() == 24)
-	{
-		IppRgbImage imgSrc;
-		IppByteImage imgDst;
-
-		IppDibToImage(DibSrc, imgSrc);
-		imgDst.Convert(imgSrc);
-		IppImageToDib(imgDst, DibWork);
-	}
-	else if (DibSrc.GetBitCount() == 8)
-	{
-		DibWork = DibSrc;
-	}
-	else
-	{
-		AfxMessageBox(_T("잘못된 파일 형식입니다."));
-	}
-
-	IppDibToImage(DibWork, imgWork);
-
-	switch (index)
-	{
-	case 0:
-		DbcFilterGaussian(imgWork);
-		break;
-
-	case 1:
-		DbcInverse(imgWork);
-		break;
-
-	case 2:
-		DbcBrightness(imgWork);
-		break;
-
-	case 3:
-		DbcContrast(imgWork);
-		break;
-
-	case 4:
-		DbcGammaCorrection(imgWork);
-		break;
-
-	case 5:
-		DbcLaplacian(imgWork);
-		break;
-
-	case 6:
-		DbcUnsharpMask(imgWork);
-		break;
-
-	case 7:
-		DbcHighboost(imgWork);
-		break;
-
-	default:
-		break;
-	}
-}
+//void CVisionImageDlg::OnLbnDblclkListFilter()
+//{
+//	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+//	int index = m_ListBox.GetCurSel();
+//	
+//	dibPrev = dib;
+//	IppDib DibSrc = dib;
+//	IppDib DibWork;
+//	IppByteImage imgWork, imgRes, imgTmp;
+//
+//	if (DibSrc.GetBitCount() == 24)
+//	{
+//		IppRgbImage imgSrc;
+//		IppByteImage imgDst;
+//
+//		IppDibToImage(DibSrc, imgSrc);
+//		imgDst.Convert(imgSrc);
+//		IppImageToDib(imgDst, DibWork);
+//	}
+//	else if (DibSrc.GetBitCount() == 8)
+//	{
+//		DibWork = DibSrc;
+//	}
+//	else
+//	{
+//		AfxMessageBox(_T("잘못된 파일 형식입니다."));
+//	}
+//
+//	IppDibToImage(DibWork, imgWork);
+//
+//	switch (index)
+//	{
+//	case 0:
+//		DbcFilterGaussian(imgWork);
+//		break;
+//
+//	case 1:
+//		DbcInverse(imgWork);
+//		break;
+//
+//	case 2:
+//		DbcBrightness(imgWork);
+//		break;
+//
+//	case 3:
+//		DbcContrast(imgWork);
+//		break;
+//
+//	case 4:
+//		DbcGammaCorrection(imgWork);
+//		break;
+//
+//	case 5:
+//		DbcLaplacian(imgWork);
+//		break;
+//
+//	case 6:
+//		DbcUnsharpMask(imgWork);
+//		break;
+//
+//	case 7:
+//		DbcHighboost(imgWork);
+//		break;
+//
+//	default:
+//		break;
+//	}
+//}
 
 
 void CVisionImageDlg::OnClickedButtonInoutput()
@@ -816,15 +837,21 @@ void CVisionImageDlg::OnTcnSelchangeTabRecipe(NMHDR *pNMHDR, LRESULT *pResult)
 		{
 		case 0:
 			this->pDlg1.ShowWindow(SW_SHOW);
+			this->pDlg2.ShowWindow(SW_HIDE);
+			this->pDlg3.ShowWindow(SW_HIDE);
 			this->m_pwndShow = &this->pDlg1;
 			break;
 
 		case 1:
+			this->pDlg1.ShowWindow(SW_HIDE);
 			this->pDlg2.ShowWindow(SW_SHOW);
+			this->pDlg3.ShowWindow(SW_HIDE);
 			this->m_pwndShow = &this->pDlg2;
 			break;
 
 		case 2:
+			this->pDlg1.ShowWindow(SW_HIDE);
+			this->pDlg2.ShowWindow(SW_HIDE);
 			this->pDlg3.ShowWindow(SW_SHOW);
 			this->m_pwndShow = &this->pDlg3;
 			break;
@@ -963,6 +990,74 @@ void CVisionImageDlg::GetIndexI(int GetIndex)
 	case 7:
 		DbcHighboost(imgWork);
 		break;*/
+
+	default:
+		break;
+	}
+}
+
+void CVisionImageDlg::GetIndexD(int GetIndex)
+{
+	int index = GetIndex;
+
+	dibPrev = dib;
+	IppDib DibSrc = dib;
+	IppDib DibWork;
+	IppByteImage imgWork, imgRes, imgTmp;
+
+	if (DibSrc.GetBitCount() == 24)
+	{
+		IppRgbImage imgSrc;
+		IppByteImage imgDst;
+
+		IppDibToImage(DibSrc, imgSrc);
+		imgDst.Convert(imgSrc);
+		IppImageToDib(imgDst, DibWork);
+	}
+	else if (DibSrc.GetBitCount() == 8)
+	{
+		DibWork = DibSrc;
+	}
+	else
+	{
+		AfxMessageBox(_T("잘못된 파일 형식입니다."));
+	}
+
+	IppDibToImage(DibWork, imgWork);
+
+	switch (index)
+	{
+	case 0:
+		DbcEdgeRoberts(imgWork);
+		break;
+
+	case 1:
+		DbcEdgePrewitt(imgWork);
+		break;
+
+	case 2:
+		DbcEdgeSobel(imgWork);
+		break;
+			/*
+		case 3:
+			DbcContrast(imgWork);
+			break;
+
+		case 4:
+			DbcGammaCorrection(imgWork);
+			break;
+
+		case 5:
+			DbcLaplacian(imgWork);
+			break;
+
+		case 6:
+			DbcUnsharpMask(imgWork);
+			break;
+
+		case 7:
+			DbcHighboost(imgWork);
+			break;*/
 
 	default:
 		break;
