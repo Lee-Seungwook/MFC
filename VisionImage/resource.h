@@ -15,7 +15,8 @@
 #define IDD_TAB2                        135
 #define IDD_TAB3                        136
 #define IDD_BINARIZATION                140
-#define IDD_DIALOG1                     142
+#define IDD_CANNYEDGE                   142
+#define IDD_HOUGHLINE_CANNY             143
 #define IDC_BUTTON_OPEN                 1000
 #define IDC_BUTTON2                     1001
 #define IDC_BUTTON_SAVE                 1001
@@ -45,12 +46,18 @@
 #define IDC_THRESHOLD_EDIT              1025
 #define IDC_IMAGE_PREVIEW               1026
 #define IDC_LIST_D                      1027
-#define IDC_SLIDER1                     1028
-#define IDC_SLIDER2                     1029
-#define IDC_SLIDER3                     1030
-#define IDC_EDIT1                       1031
-#define IDC_EDIT2                       1032
-#define IDC_EDIT3                       1033
+#define IDC_GAUSSIAN_SLIDER             1028
+#define IDC_LOW_SLIDER                  1029
+#define IDC_MAX_SLIDER                  1030
+#define IDC_GAUSSIAN_EDIT               1031
+#define IDC_LOW_EDIT                    1032
+#define IDC_MAX_EDIT                    1033
+#define IDC_HGAUSSIAN_SLIDER            1034
+#define IDC_HLOW_SLIDER                 1035
+#define IDC_HMAX_SLIDER                 1036
+#define IDC_HGAUSSIAN_EDIT              1037
+#define IDC_HLOW_EDIT                   1038
+#define IDC_HMAX_EDIT                   1039
 
 // Next default values for new objects
 // 
@@ -58,7 +65,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        144
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1032
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

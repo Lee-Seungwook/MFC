@@ -134,6 +134,8 @@ public:
 	void DbcEdgeRoberts(IppByteImage& imgWork); // 엣지 로버츠
 	void DbcEdgePrewitt(IppByteImage& imgWork); // 엣지 프리윗
 	void DbcEdgeSobel(IppByteImage& imgWork); // 엣지 소벨
+	void DbcEdgeCanny(IppByteImage& imgWork); // 엣지 캐니
+	void DbcHoughLine(IppByteImage& imgWork); // 허프 직선
 
 	void GetIndexF(int GetIndex); // Tab1의 리스트 박스 인덱스를 받기 위함
 	void GetIndexI(int GetIndex); // Tab2의 리스트 박스 인덱스를 받기 위함

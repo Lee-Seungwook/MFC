@@ -21,6 +21,7 @@
 #include "ContrastDlg.h"
 #include "GammaCorrectionDlg.h"
 #include "BinarizationDlg.h"
+#include "CannyEdgeDlg.h"
 
 #include "Tab1.h"
 
@@ -63,6 +64,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 //	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnEnChangeGaussianEdit();
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
@@ -485,6 +487,25 @@ void CVisionImageDlg::DbcEdgeSobel(IppByteImage& imgWork)
 	IppImageToDib(imgDst, dib);
 
 	SetImage(dib);
+}
+
+void CVisionImageDlg::DbcEdgeCanny(IppByteImage& imgWork)
+{
+	CCannyEdgeDlg dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		IppByteImage imgSrc = imgWork;
+		IppByteImage imgDst;
+		IppEdgeCanny(imgSrc, imgDst, dlg.m_fSigma, dlg.m_fLowTh, dlg.m_fMaxTh);
+		IppImageToDib(imgDst, dib);
+
+		SetImage(dib);
+	}
+}
+
+void DbcHoughLine(IppByteImage& imgWork)
+{
+
 }
 
 void CVisionImageDlg::OnClickedButtonOpen()
@@ -963,34 +984,6 @@ void CVisionImageDlg::GetIndexI(int GetIndex)
 		DbcBinary(DibWork);
 		break;
 
-	/*case 1:
-		DbcInverse(imgWork);
-		break;
-
-	case 2:
-		DbcBrightness(imgWork);
-		break;
-
-	case 3:
-		DbcContrast(imgWork);
-		break;
-
-	case 4:
-		DbcGammaCorrection(imgWork);
-		break;
-
-	case 5:
-		DbcLaplacian(imgWork);
-		break;
-
-	case 6:
-		DbcUnsharpMask(imgWork);
-		break;
-
-	case 7:
-		DbcHighboost(imgWork);
-		break;*/
-
 	default:
 		break;
 	}
@@ -1038,26 +1031,10 @@ void CVisionImageDlg::GetIndexD(int GetIndex)
 	case 2:
 		DbcEdgeSobel(imgWork);
 		break;
-			/*
-		case 3:
-			DbcContrast(imgWork);
-			break;
-
-		case 4:
-			DbcGammaCorrection(imgWork);
-			break;
-
-		case 5:
-			DbcLaplacian(imgWork);
-			break;
-
-		case 6:
-			DbcUnsharpMask(imgWork);
-			break;
-
-		case 7:
-			DbcHighboost(imgWork);
-			break;*/
+		
+	case 3:
+		DbcEdgeCanny(imgWork);
+		break;
 
 	default:
 		break;

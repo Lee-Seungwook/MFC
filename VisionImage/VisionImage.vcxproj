@@ -195,10 +195,12 @@
   <ItemGroup>
     <ClInclude Include="BinarizationDlg.h" />
     <ClInclude Include="BrightnessDlg.h" />
+    <ClInclude Include="CannyEdgeDlg.h" />
     <ClInclude Include="ContrastDlg.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GammaCorrectionDlg.h" />
     <ClInclude Include="GaussianDlg.h" />
+    <ClInclude Include="HoughLineDlg.h" />
     <ClInclude Include="ImageSize.h" />
     <ClInclude Include="IppConvert.h" />
     <ClInclude Include="IppDib.h" />
@@ -221,9 +223,11 @@
   <ItemGroup>
     <ClCompile Include="BinarizationDlg.cpp" />
     <ClCompile Include="BrightnessDlg.cpp" />
+    <ClCompile Include="CannyEdgeDlg.cpp" />
     <ClCompile Include="ContrastDlg.cpp" />
     <ClCompile Include="GammaCorrectionDlg.cpp" />
     <ClCompile Include="GaussianDlg.cpp" />
+    <ClCompile Include="HoughLineDlg.cpp" />
     <ClCompile Include="ImageSize.cpp" />
     <ClCompile Include="IppConvert.cpp" />
     <ClCompile Include="IppDib.cpp" />
