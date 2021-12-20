@@ -7,6 +7,8 @@
 #include "VisionImage.h"
 #include "VisionImageDlg.h"
 #include "afxdialogex.h"
+#include <algorithm>
+#include <functional>
 
 #include "IppImage.h"
 #include "IppConvert.h"
@@ -22,6 +24,7 @@
 #include "GammaCorrectionDlg.h"
 #include "BinarizationDlg.h"
 #include "CannyEdgeDlg.h"
+#include "HoughLineDlg.h"
 
 #include "Tab1.h"
 
@@ -503,9 +506,34 @@ void CVisionImageDlg::DbcEdgeCanny(IppByteImage& imgWork)
 	}
 }
 
-void DbcHoughLine(IppByteImage& imgWork)
+void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 {
+	CHoughLineDlg dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		IppByteImage imgSrc = imgWork;
+		IppByteImage imgEdge;
+		IppEdgeCanny(imgSrc, imgEdge, dlg.m_fSigmaH, dlg.m_fLowThH, dlg.m_fMaxThH);
 
+		std::vector<IppLineParam> lines;
+		IppHoughLine(imgEdge, lines);
+
+		if (lines.size() == 0)
+		{
+			AfxMessageBox(_T("검출된 직선이 없습니다."));
+			return;
+		}
+
+		std::sort(lines.begin(), lines.end());
+
+		// 최대 10개의 직선만 그려줌 (수정을 통해 그려질 직선의 개수를 조정할 수 있다.)
+		int cnt = __min(10, lines.size());
+		for (int i = 0; i < cnt; i++)
+			IppDrawLine(imgSrc, lines[i], 255);
+
+		IppImageToDib(imgSrc, dib);
+		SetImage(dib);
+	}
 }
 
 void CVisionImageDlg::OnClickedButtonOpen()
@@ -1034,6 +1062,10 @@ void CVisionImageDlg::GetIndexD(int GetIndex)
 		
 	case 3:
 		DbcEdgeCanny(imgWork);
+		break;
+
+	case 4:
+		DbcHoughLine(imgWork);
 		break;
 
 	default:
