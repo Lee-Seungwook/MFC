@@ -6,6 +6,7 @@
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
 #define IDD_VISIONIMAGE_DIALOG          102
+#define IDS_STRING102                   102
 #define IDR_MAINFRAME                   128
 #define IDD_GAUSSIAN                    130
 #define IDD_CONTRAST                    131
@@ -17,6 +18,7 @@
 #define IDD_BINARIZATION                140
 #define IDD_CANNYEDGE                   142
 #define IDD_HOUGHLINE_CANNY             143
+#define IDR_AVI_TYPE                    144
 #define IDC_BUTTON_OPEN                 1000
 #define IDC_BUTTON2                     1001
 #define IDC_BUTTON_SAVE                 1001
@@ -58,13 +60,28 @@
 #define IDC_HGAUSSIAN_EDIT              1037
 #define IDC_HLOW_EDIT                   1038
 #define IDC_HMAX_EDIT                   1039
+#define ID_32771                        32771
+#define ID_32772                        32772
+#define ID_32773                        32773
+#define ID_32774                        32774
+#define ID_32775                        32775
+#define ID_32776                        32776
+#define ID_32777                        32777
+#define ID_32778                        32778
+#define ID_32779                        32779
+#define ID_32780                        32780
+#define ID_32781                        32781
+#define ID_32782                        32782
+#define ID_32783                        32783
+#define ID_32784                        32784
+#define ID_32785                        32785
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        144
-#define _APS_NEXT_COMMAND_VALUE         32771
+#define _APS_NEXT_RESOURCE_VALUE        145
+#define _APS_NEXT_COMMAND_VALUE         32786
 #define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

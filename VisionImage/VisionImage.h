@@ -9,7 +9,7 @@
 #endif
 
 #include "resource.h"		// 주 기호입니다.
-
+#include "IppDib.h"
 
 // CVisionImageApp:
 // 이 클래스의 구현에 대해서는 VisionImage.cpp을(를) 참조하세요.
@@ -19,6 +19,11 @@ class CVisionImageApp : public CWinApp
 {
 public:
 	CVisionImageApp();
+
+public:
+	IppDib* m_pNewDib;
+	CMultiDocTemplate* m_pImageDocTemplate;
+	CMultiDocTemplate* m_pAviDocTemplate;
 
 // 재정의입니다.
 public:

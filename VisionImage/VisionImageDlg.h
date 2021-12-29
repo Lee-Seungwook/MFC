@@ -11,6 +11,10 @@
 #include "Tab2.h"
 #include "Tab3.h"
 
+#include "afxwin.h"
+
+
+
 // CVisionImageDlg 대화 상자
 class CVisionImageDlg : public CDialogEx
 {
@@ -65,6 +69,12 @@ private:
 	float m_fHorizontalRatio;
 
 	BYTE **p; // 영상의 픽셀 정보
+
+	HWND hWindow;
+	int iBitmapFlag = 0;
+	CBitmap capture_map;
+	unsigned char *arrImage1;
+	unsigned char *arrImage2;
 
 // 생성입니다.
 public:
@@ -141,4 +151,5 @@ public:
 	void GetIndexI(int GetIndex); // Tab2의 리스트 박스 인덱스를 받기 위함
 	void GetIndexD(int GetIndex); // Tab3의 리스트 박스 인덱스를 받기 위함
 
+	void OnDestroy();
 };

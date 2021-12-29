@@ -9,6 +9,11 @@
 #include "afxdialogex.h"
 #include <algorithm>
 #include <functional>
+#include "vfw.h"
+
+#include "AviChildFrame.h"
+#include "AviDoc.h"
+#include "AviView.h"
 
 #include "IppImage.h"
 #include "IppConvert.h"
@@ -31,8 +36,11 @@
 #include <gdiplus.h> //gdi+
 #pragma comment(lib, "gdiplus.lib") //gdi+
 
+#pragma comment (lib, "vfw32.lib")
+
 using namespace Gdiplus;
 using namespace std;
+using namespace cv;
 
 #define CONVERT_DIB_TO_BYTEIMAGE(m_Dib, img) \
 	IppByteImage img; \
@@ -227,6 +235,18 @@ BOOL CVisionImageDlg::OnInitDialog()
 
 	this->pDlg3.Create(IDD_TAB3, &this->m_TabRecipe);
 	this->pDlg3.SetWindowPos(NULL, 5, 25, rect.Width() - 10, rect.Height() - 30, SWP_NOZORDER);
+
+	//hWindow = capCreateCaptureWindow(NULL, WS_CHILD | WS_VISIBLE, 0, 0, 640, 480, m_hWnd, 1);
+
+	//bool ret = capDriverConnect(hWindow, 0);
+	//if (ret == false)
+	//{
+	//	AfxMessageBox(_T("Webcam not found"), MB_ICONERROR);
+
+	//	return false;
+	//}
+
+
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -497,10 +517,22 @@ void CVisionImageDlg::DbcEdgeCanny(IppByteImage& imgWork)
 	CCannyEdgeDlg dlg;
 	if (dlg.DoModal() == IDOK)
 	{
-		IppByteImage imgSrc = imgWork;
+		/*IppByteImage imgSrc = imgWork;
 		IppByteImage imgDst;
 		IppEdgeCanny(imgSrc, imgDst, dlg.m_fSigma, dlg.m_fLowTh, dlg.m_fMaxTh);
-		IppImageToDib(imgDst, dib);
+		IppImageToDib(imgDst, dib);*/
+		IppByteImage imgSrc = imgWork;
+
+		Mat mat;
+		IppImageToMat(imgSrc, mat);
+
+		Mat matEdge;
+		double lowTh = dlg.m_fLowTh, highTh = dlg.m_fMaxTh;
+		Canny(mat, matEdge, dlg.m_fLowTh, dlg.m_fMaxTh, 3);
+
+		IppByteImage imgEdge;
+		IppMatToImage(matEdge, imgEdge);
+		IppImageToDib(imgEdge, dib);
 
 		SetImage(dib);
 	}
@@ -539,7 +571,7 @@ void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 void CVisionImageDlg::OnClickedButtonOpen()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CString szFilter = _T("Image(*.BMP, *.JPG) | *.BMP;*.JPG | ALL Files(*.*)|*.*||");
+	CString szFilter = _T("Image(*.BMP, *.JPG) | *.BMP;*.JPG; | ALL Files(*.*)|*.*||");
 
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, szFilter);
 
@@ -552,6 +584,8 @@ void CVisionImageDlg::OnClickedButtonOpen()
 		//m_img.Load(strPathName); // 작은 이미지 영상 설정 CImage 사용
 
 		// m_fHorizontalRatio = (float)m_SmallPic.Width() / m_img.GetWidth();
+
+		
 
 		if (m_Dib.IsValid())
 		{
