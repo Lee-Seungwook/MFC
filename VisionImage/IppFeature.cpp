@@ -7,6 +7,9 @@
 const double PI = 3.14159265358979323846;
 const float  PI_F = 3.14159265358979323846f;
 
+using namespace std;
+
+
 #define CHECK_WEAK_EDGE(x, y) \
 	if (pEdge[y][x] == WEAK_EDGE) { \
 		pEdge[y][x] = STRONG_EDGE; \
@@ -133,6 +136,7 @@ void IppEdgeCanny(IppByteImage& imgSrc, IppByteImage& imgEdge, float sigma, floa
 	imgEdge.CreateImage(w, h);
 	BYTE** pEdge = imgEdge.GetPixels2D();
 
+
 	enum DISTRICT { AREA0 = 0, AREA45, AREA90, AREA135, NOAREA };
 
 	const BYTE STRONG_EDGE = 255;
@@ -232,7 +236,7 @@ void IppEdgeCanny(IppByteImage& imgSrc, IppByteImage& imgEdge, float sigma, floa
 		}
 }
 
-void IppHoughLine(IppByteImage& img, std::vector<IppLineParam>& lines, int threshold)
+void IppHoughLine(IppByteImage& img, vector<IppLineParam>& lines, int threshold)
 {
 	register int i, j;
 
@@ -241,7 +245,7 @@ void IppHoughLine(IppByteImage& img, std::vector<IppLineParam>& lines, int thres
 
 	BYTE** ptr = img.GetPixels2D();
 
-	int num_rho = static_cast<int>(sqrt((double)w*w + h * h) * 2);
+	int num_rho = static_cast<int>(sqrt((double)w * w + h * h) * 2); // 직선의 방정식 (제곱근 계산)
 	int num_ang = 360;
 
 	//-------------------------------------------------------------------------
@@ -284,7 +288,7 @@ void IppHoughLine(IppByteImage& img, std::vector<IppLineParam>& lines, int thres
 	// 임계값보다 큰 국지적 최대값을 찾아 직선 성분으로 결정
 	//-------------------------------------------------------------------------
 
-	lines.clear();
+	lines.clear(); // 벡터 초기화
 	int value;
 	for (m = 0; m < num_rho; m++)
 		for (n = 0; n < num_ang; n++)

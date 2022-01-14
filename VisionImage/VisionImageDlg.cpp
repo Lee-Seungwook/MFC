@@ -547,7 +547,7 @@ void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 		IppByteImage imgEdge;
 		IppEdgeCanny(imgSrc, imgEdge, dlg.m_fSigmaH, dlg.m_fLowThH, dlg.m_fMaxThH);
 
-		std::vector<IppLineParam> lines;
+		vector<IppLineParam> lines;
 		IppHoughLine(imgEdge, lines);
 
 		if (lines.size() == 0)
@@ -556,7 +556,7 @@ void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 			return;
 		}
 
-		std::sort(lines.begin(), lines.end());
+		sort(lines.begin(), lines.end()); // vector 정렬
 
 		// 최대 10개의 직선만 그려줌 (수정을 통해 그려질 직선의 개수를 조정할 수 있다.)
 		int cnt = __min(10, lines.size());

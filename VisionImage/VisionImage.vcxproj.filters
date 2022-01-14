@@ -84,9 +84,6 @@
     <ClInclude Include="BinarizationDlg.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="IppFeature.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
     <ClInclude Include="CannyEdgeDlg.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -103,6 +100,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="AviView.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Port.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="IppFeature.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -183,6 +186,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="AviView.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Port.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="GrabSample.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

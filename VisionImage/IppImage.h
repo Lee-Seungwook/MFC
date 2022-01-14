@@ -3,6 +3,9 @@
 #include <Windows.h>
 #include <memory.h>
 #include "RGBBYTE.h"
+#include <vector>
+
+using namespace std;
 
 #define RGB2GRAY(r, g, b) (0.299*(r) + 0.587*(g) + 0.114*(b))
 
@@ -30,6 +33,7 @@ public:
 		if (pixels) return pixels[0];
 		else return NULL;
 	}
+	
 	T** GetPixels2D() const { return pixels; }
 
 	// 대입 연산자 재정의
@@ -53,6 +57,7 @@ typedef IppImage<int> IppIntImage;
 typedef IppImage<float> IppFloatImage;
 typedef IppImage<double> IppDoubleImage;
 typedef IppImage<RGBBYTE> IppRgbImage;
+typedef IppImage<vector<BYTE>> IppVectorImage; // 임의 추가
 
 template<typename T>
 IppImage <T>::IppImage() : width(0), height(0), pixels(NULL)

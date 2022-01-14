@@ -1,16 +1,43 @@
 #include "pch.h"
 #include <math.h>
 #include "IppEnhance.h"
+#include <vector>
+#include <iostream>
+#include <iterator>
+#include <algorithm>
+
+using namespace std;
 
 void IppInverse(IppByteImage& img)
 {
 	int size = img.GetSize();
 	BYTE* p = img.GetPixels();
 
-	for (int i = 0; i < size; i++)
+	vector<BYTE> v;
+
+	v.resize(size + 1); // reserve 사용 시 런 타임 오류가 있으나, resize 사용 시 vector에 값이 들어가는 듯 함...
+
+	copy(p, p + size, v.begin()); // 뒤의 요소에 복사하는 것임 (첫 번째는 복사 시작, 두번 째는 복사 마지막, 세 번째는 대입할 대상)
+	
+	if (!v.empty())
 	{
-		p[i] = 255 - p[i];
+		for (int i = 0; i < size; i++)
+		{
+			// v[i] = 255 - v[i];
+			v.push_back(255 - v[i]);
+		}
+		cout << "Vector 사용" << endl;
+		cout << "Vector[125] : " << v[99] << endl;
 	}
+	else if (v.empty())
+	{
+		for (int i = 0; i < size; i++)
+		{
+			p[i] = 255 - p[i];
+		}
+		cout << "배열 사용" << endl;
+	}
+	
 }
 
 void IppBrightness(IppByteImage& img, int n)

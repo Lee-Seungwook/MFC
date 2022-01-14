@@ -94,14 +94,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\opencv\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(GENICAM_ROOT_V2_4)\library\cpp\include;$(CREVIS_CAM_ROOT)/Cameras/MCam40/include;C:\opencv\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>vfw32.lib;IppImage\jpeg.lib;opencv_world453d.lib;%(AdditionalLibraryDirectories)</AdditionalDependencies>
+      <AdditionalDependencies>CrevisTL40.lib;vfw32.lib;IppImage\jpeg.lib;opencv_world453d.lib;%(AdditionalLibraryDirectories)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>C:\opencv\mbuild\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(GENICAM_ROOT_V2_4)/library/CPP/Lib/Win32_i86;$(CREVIS_CAM_ROOT)/Cameras/MCam40/lib/x86;C:\opencv\mbuild\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -220,6 +220,7 @@
     <ClInclude Include="IppImage.h" />
     <ClInclude Include="IppSegment.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Port.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RGBBYTE.h" />
     <ClInclude Include="stdafx.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="ContrastDlg.cpp" />
     <ClCompile Include="GammaCorrectionDlg.cpp" />
     <ClCompile Include="GaussianDlg.cpp" />
+    <ClCompile Include="GrabSample.cpp" />
     <ClCompile Include="HoughLineDlg.cpp" />
     <ClCompile Include="ImageSize.cpp" />
     <ClCompile Include="IppAvi.cpp" />
@@ -256,6 +258,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Port.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Tab1.cpp" />
     <ClCompile Include="Tab2.cpp" />
