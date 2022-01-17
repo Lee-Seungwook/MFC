@@ -178,7 +178,7 @@ void IppRotate(IppByteImage& imgSrc, IppByteImage& imgDst, double angle)
 	int i, j, x1, x2, y1, y2;
 	double rx, ry, p, q, temp;
 
-	for (j = miny; j <= maxx; j++)
+	for (j = miny; j <= maxy; j++)
 	for (i = minx; i <= maxx; i++)
 	{	// 역방향 매핑 - 회전이 적용된 후의 영상에 비어있는 공간이 생기지 않게 하기 위함
 		// x = cosΘ * x' + sinΘ * y'

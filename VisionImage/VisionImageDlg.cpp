@@ -482,15 +482,11 @@ void CVisionImageDlg::DbcBinary(IppDib& DibWork)
 	}
 }
 
-void CVisionImageDlg::DbcRotate(IppDib& DibWork)
+void CVisionImageDlg::DbcRotate(IppByteImage& imgWork)
 {
-	IppDib Dib = DibWork;
 	CRotateDlg dlg;
-	dlg.SetImage(Dib);
-
 	IppByteImage imgSrc;
-	IppDibToImage(Dib, imgSrc);
-
+	imgSrc = imgWork;
 	if (dlg.DoModal() == IDOK)
 	{
 		IppByteImage imgDst;
@@ -1067,7 +1063,7 @@ void CVisionImageDlg::GetIndexI(int GetIndex)
 		break;
 
 	case 1:
-		DbcRotate(DibWork);
+		DbcRotate(imgWork);
 		break;
 
 	default:

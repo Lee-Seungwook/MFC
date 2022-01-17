@@ -54,48 +54,35 @@ BOOL CRotateDlg::OnInitDialog()
 	m_sliderRotate.SetPageSize(32);
 	m_sliderRotate.SetPos(m_nRotate);
 
-	// 픽처 컨트롤의 크기를 구함
-	CRect rect;
-	CWnd* pImageWnd = GetDlgItem(IDC_IMAGE_PREVIEW);
-	pImageWnd->GetClientRect(rect);
-
-	IppByteImage imgSrc, imgDst;
-	IppDibToImage(m_DibSrc, imgSrc);
-	IppResizeNearest(imgSrc, imgDst, rect.Width(), rect.Height());
-	IppImageToDib(imgDst, m_DibSrc);
-
-	// 초기 임계값에 의한 미리보기 이진화 영상 만들기
-	MakePreviewImage();
-
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
 
-void CRotateDlg::SetImage(IppDib& Dib)
-{
-	m_DibSrc = Dib;
-	if (!m_DibSrc.IsValid())
-	{
-		AfxMessageBox(_T("비었음"));
-	}
-}
+//void CRotateDlg::SetImage(IppDib& Dib)
+//{
+//	m_DibSrc = Dib;
+//	if (!m_DibSrc.IsValid())
+//	{
+//		AfxMessageBox(_T("비었음"));
+//	}
+//}
 
-void CRotateDlg::MakePreviewImage()
-{
-	IppByteImage imgSrc, imgDst;
-	IppDibToImage(m_DibSrc, imgSrc);
-	IppRotate(imgSrc, imgDst, m_nRotate);
-	IppImageToDib(imgDst, m_DibRes);
-}
+//void CRotateDlg::MakePreviewImage()
+//{
+//	IppByteImage imgSrc, imgDst;
+//	IppDibToImage(m_DibSrc, imgSrc);
+//	IppRotate(imgSrc, imgDst, m_nRotate);
+//	IppImageToDib(imgDst, m_DibRes);
+//}
 
-void CRotateDlg::OnPaint()
-{
-	CPaintDC dc(this); // device context for painting
-					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
-					   // 그리기 메시지에 대해서는 CDialogEx::OnPaint()을(를) 호출하지 마십시오.
-	CPaintDC dcPreview(GetDlgItem(IDC_IMAGE_PREVIEW));
-	m_DibRes.Draw(dcPreview.m_hDC, 0, 0);
-}
+//void CRotateDlg::OnPaint()
+//{
+//	CPaintDC dc(this); // device context for painting
+//					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
+//					   // 그리기 메시지에 대해서는 CDialogEx::OnPaint()을(를) 호출하지 마십시오.
+//	CPaintDC dcPreview(GetDlgItem(IDC_IMAGE_PREVIEW));
+//	m_DibRes.Draw(dcPreview.m_hDC, 0, 0);
+//}
 
 
 void CRotateDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -108,10 +95,6 @@ void CRotateDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		int nPos = m_sliderRotate.GetPos();
 		m_nRotate = nPos;
 		UpdateData(FALSE);
-
-		// 현재 설정된 임계값을 이용하여 미리보기 영상의 회전을 수행
-		MakePreviewImage();
-		Invalidate(FALSE);
 	}
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
@@ -127,8 +110,4 @@ void CRotateDlg::OnChangeRotateEdit()
 	// 에디트 컨트롤에서 글자가 바뀐 경우, 슬라이더 컨트롤의 위치를 조절
 	UpdateData(TRUE);
 	m_sliderRotate.SetPos(m_nRotate);
-
-	// 현재 설정된 각도를 이용하여 미리보기 영상의 회전을 수행
-	MakePreviewImage();
-	Invalidate(FALSE);
 }
