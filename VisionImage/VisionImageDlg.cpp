@@ -30,6 +30,7 @@
 #include "BinarizationDlg.h"
 #include "CannyEdgeDlg.h"
 #include "HoughLineDlg.h"
+#include "RotateDlg.h"
 
 #include "Tab1.h"
 
@@ -475,6 +476,25 @@ void CVisionImageDlg::DbcBinary(IppDib& DibWork)
 	{
 		IppByteImage imgDst;
 		IppBinarization(imgSrc, imgDst, dlg.m_nThreshold);
+		IppImageToDib(imgDst, dib);
+
+		SetImage(dib);
+	}
+}
+
+void CVisionImageDlg::DbcRotate(IppDib& DibWork)
+{
+	IppDib Dib = DibWork;
+	CRotateDlg dlg;
+	dlg.SetImage(Dib);
+
+	IppByteImage imgSrc;
+	IppDibToImage(Dib, imgSrc);
+
+	if (dlg.DoModal() == IDOK)
+	{
+		IppByteImage imgDst;
+		IppRotate(imgSrc, imgDst, dlg.m_nRotate);
 		IppImageToDib(imgDst, dib);
 
 		SetImage(dib);
@@ -1044,6 +1064,10 @@ void CVisionImageDlg::GetIndexI(int GetIndex)
 	{
 	case 0:
 		DbcBinary(DibWork);
+		break;
+
+	case 1:
+		DbcRotate(DibWork);
 		break;
 
 	default:

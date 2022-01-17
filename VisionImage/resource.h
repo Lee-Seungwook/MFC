@@ -6,7 +6,6 @@
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
 #define IDD_VISIONIMAGE_DIALOG          102
-#define IDS_STRING102                   102
 #define IDR_MAINFRAME                   128
 #define IDD_GAUSSIAN                    130
 #define IDD_CONTRAST                    131
@@ -19,6 +18,7 @@
 #define IDD_CANNYEDGE                   142
 #define IDD_HOUGHLINE_CANNY             143
 #define IDR_AVI_TYPE                    144
+#define IDD_ROTATE                      145
 #define IDC_BUTTON_OPEN                 1000
 #define IDC_BUTTON2                     1001
 #define IDC_BUTTON_SAVE                 1001
@@ -60,6 +60,8 @@
 #define IDC_HGAUSSIAN_EDIT              1037
 #define IDC_HLOW_EDIT                   1038
 #define IDC_HMAX_EDIT                   1039
+#define IDC_ROTATE_SLIDER               1040
+#define IDC_ROTATE_EDIT                 1041
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -80,9 +82,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        145
+#define _APS_NEXT_RESOURCE_VALUE        147
 #define _APS_NEXT_COMMAND_VALUE         32786
-#define _APS_NEXT_CONTROL_VALUE         1040
+#define _APS_NEXT_CONTROL_VALUE         1042
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

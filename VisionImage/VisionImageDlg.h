@@ -140,6 +140,7 @@ public:
 	void DbcHighboost(IppByteImage& imgWork); // 하이부스트 필터
 
 	void DbcBinary(IppDib& dibWork); // 이진화
+	void DbcRotate(IppDib& dibWork); // 회전 수행
 
 	void DbcEdgeRoberts(IppByteImage& imgWork); // 엣지 로버츠
 	void DbcEdgePrewitt(IppByteImage& imgWork); // 엣지 프리윗
