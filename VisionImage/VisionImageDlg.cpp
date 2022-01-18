@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <functional>
 #include "vfw.h"
+#include <iostream>
 
 #include "AviChildFrame.h"
 #include "AviDoc.h"
@@ -363,6 +364,8 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 		p = imgSrc.GetPixels2D();
 
 		Invalidate(TRUE);
+		cout << "영상 출력" << endl;
+		cout << endl;
 	}
 	else
 	{
@@ -379,6 +382,9 @@ void CVisionImageDlg::DbcFilterGaussian(IppByteImage& imgWork)
 		IppFloatImage imgDst;
 		IppFilterGaussian(imgSrc, imgDst, dlg.m_fSigma);
 		IppImageToDib(imgDst, dib);
+		
+		cout << "가우시안 필터 적용" << endl;
+		cout << endl;
 
 		SetImage(dib);
 	}
@@ -389,6 +395,9 @@ void CVisionImageDlg::DbcInverse(IppByteImage& imgWork)
 	IppByteImage imgSrc = imgWork;
 	IppInverse(imgSrc);
 	IppImageToDib(imgSrc, dib);
+
+	cout << "영상 반전 적용" << endl;
+	cout << endl;
 
 	SetImage(dib);
 }
@@ -401,6 +410,9 @@ void CVisionImageDlg::DbcBrightness(IppByteImage& imgWork)
 		IppByteImage imgSrc = imgWork;
 		IppBrightness(imgSrc, dlg.m_nBrightness);
 		IppImageToDib(imgSrc, dib);
+
+		cout << "영상 밝기 적용" << endl;
+		cout << endl;
 
 		SetImage(dib);
 	}
@@ -415,6 +427,9 @@ void CVisionImageDlg::DbcContrast(IppByteImage& imgWork)
 		IppBrightness(imgSrc, dlg.m_nContrast);
 		IppImageToDib(imgSrc, dib);
 
+		cout << "영상 명암비 적용" << endl;
+		cout << endl;
+
 		SetImage(dib);
 	}
 }
@@ -428,6 +443,9 @@ void CVisionImageDlg::DbcGammaCorrection(IppByteImage& imgWork)
 		IppBrightness(imgSrc, dlg.m_fGamma);
 		IppImageToDib(imgSrc, dib);
 
+		cout << "영상 감마 조절 적용" << endl;
+		cout << endl;
+
 		SetImage(dib);
 	}
 }
@@ -439,6 +457,9 @@ void CVisionImageDlg::DbcLaplacian(IppByteImage& imgWork)
 	IppFilterLaplacian(imgSrc, imgDst);
 	IppImageToDib(imgDst, dib);
 
+	cout << "라플라시안 필터 적용" << endl;
+	cout << endl;
+
 	SetImage(dib);
 }
 
@@ -448,6 +469,9 @@ void CVisionImageDlg::DbcUnsharpMask(IppByteImage& imgWork)
 	imgSrc = imgWork;
 	IppFilterUnsharpMask(imgSrc, imgDst);
 	IppImageToDib(imgDst, dib);
+
+	cout << "언샤프 마스크 필터 적용" << endl;
+	cout << endl;
 
 	SetImage(dib);
 }
@@ -459,6 +483,9 @@ void CVisionImageDlg::DbcHighboost(IppByteImage& imgWork)
 	float alpha = 1.2f;
 	IppFilterHighboost(imgSrc, imgDst, alpha);
 	IppImageToDib(imgDst, dib);
+
+	cout << "하이부스트 필터 적용" << endl;
+	cout << endl;
 
 	SetImage(dib);
 }
@@ -478,6 +505,9 @@ void CVisionImageDlg::DbcBinary(IppDib& DibWork)
 		IppBinarization(imgSrc, imgDst, dlg.m_nThreshold);
 		IppImageToDib(imgDst, dib);
 
+		cout << "영상의 이진화 적용" << endl;
+		cout << endl;
+
 		SetImage(dib);
 	}
 }
@@ -493,6 +523,9 @@ void CVisionImageDlg::DbcRotate(IppByteImage& imgWork)
 		IppRotate(imgSrc, imgDst, dlg.m_nRotate);
 		IppImageToDib(imgDst, dib);
 
+		cout << "영상의 회전 적용" << endl;
+		cout << endl;
+
 		SetImage(dib);
 	}
 }
@@ -503,6 +536,9 @@ void CVisionImageDlg::DbcEdgeRoberts(IppByteImage& imgWork)
 	imgSrc = imgWork;
 	IppEdgeRoberts(imgSrc, imgDst);
 	IppImageToDib(imgDst, dib);
+
+	cout << "로버츠 엣지 검출" << endl;
+	cout << endl;
 
 	SetImage(dib);
 	
@@ -515,6 +551,9 @@ void CVisionImageDlg::DbcEdgePrewitt(IppByteImage& imgWork)
 	IppEdgePrewitt(imgSrc, imgDst);
 	IppImageToDib(imgDst, dib);
 
+	cout << "프리윗 엣지 검출" << endl;
+	cout << endl;
+
 	SetImage(dib);
 }
 
@@ -524,6 +563,9 @@ void CVisionImageDlg::DbcEdgeSobel(IppByteImage& imgWork)
 	imgSrc = imgWork;
 	IppEdgeSobel(imgSrc, imgDst);
 	IppImageToDib(imgDst, dib);
+
+	cout << "소벨 엣지 검출" << endl;
+	cout << endl;
 
 	SetImage(dib);
 }
@@ -549,6 +591,9 @@ void CVisionImageDlg::DbcEdgeCanny(IppByteImage& imgWork)
 		IppByteImage imgEdge;
 		IppMatToImage(matEdge, imgEdge);
 		IppImageToDib(imgEdge, dib);
+
+		cout << "캐니 엣지 검출" << endl;
+		cout << endl;
 
 		SetImage(dib);
 	}
@@ -580,6 +625,10 @@ void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 			IppDrawLine(imgSrc, lines[i], 255);
 
 		IppImageToDib(imgSrc, dib);
+
+		cout << "허프 직선 검출" << endl;
+		cout << endl;
+
 		SetImage(dib);
 	}
 }
@@ -612,6 +661,9 @@ void CVisionImageDlg::OnClickedButtonOpen()
 			if (m_Dib.GetBitCount() == 8)
 			{
 				dib = m_Dib;
+				
+				cout << "영상 불러옴" << endl;
+				cout << endl;
 			}
 			else if (m_Dib.GetBitCount() == 24)
 			{
@@ -623,6 +675,9 @@ void CVisionImageDlg::OnClickedButtonOpen()
 				IppImageToDib(imgDst, m_Dib);
 
 				dib = m_Dib;
+
+				cout << "영상 불러옴" << endl;
+				cout << endl;
 			}
 
 			SetImage(m_Dib);
@@ -630,6 +685,7 @@ void CVisionImageDlg::OnClickedButtonOpen()
 			GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
 			GetDlgItem(IDC_BUTTON_MAG)->EnableWindow(TRUE);
 			GetDlgItem(IDC_BUTTON_INOUTPUT)->EnableWindow(TRUE);
+
 		}
 		else
 		{
@@ -655,6 +711,9 @@ void CVisionImageDlg::OnClickedButtonSave()
 		if (m_DibSave.IsValid())
 		{
 			m_DibSave.Save(CT2A(strPathName));
+
+			cout << "영상 저장" << endl;
+			cout << endl;
 		}
 		else
 		{
@@ -705,6 +764,10 @@ void CVisionImageDlg::OnClickedButtonMag()
 
 		SfRatioW = (float)(m_SmallPic.Width() - m_SmallPic.Width() / 3) / RangeW;
 		SfRatioH = (float)(m_SmallPic.Height() - m_SmallPic.Height() / 3) / RangeH;
+
+		cout << "영상 확대" << endl;
+		cout << endl;
+
 		Invalidate(TRUE);
 		
 		if (m_bMagFlag == FALSE)
@@ -919,6 +982,10 @@ void CVisionImageDlg::OnClickedButtonInoutput()
 		SetImage(dib);
 
 	m_bIOFlag = !m_bIOFlag;
+
+	cout << "영상 이전 / 이후" << endl;
+	cout << endl;
+
 }
 
 void CVisionImageDlg::OnTcnSelchangeTabRecipe(NMHDR *pNMHDR, LRESULT *pResult)
