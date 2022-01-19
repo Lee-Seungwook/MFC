@@ -148,9 +148,12 @@ public:
 	void DbcEdgeCanny(IppByteImage& imgWork); // 엣지 캐니
 	void DbcHoughLine(IppByteImage& imgWork); // 허프 직선
 
+	void DbcTemplateMatch(IppByteImage& imgWork);
+
 	void GetIndexF(int GetIndex); // Tab1의 리스트 박스 인덱스를 받기 위함
 	void GetIndexI(int GetIndex); // Tab2의 리스트 박스 인덱스를 받기 위함
 	void GetIndexD(int GetIndex); // Tab3의 리스트 박스 인덱스를 받기 위함
 
 	void OnDestroy();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };

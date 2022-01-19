@@ -18,7 +18,7 @@ CRotateDlg::CRotateDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_ROTATE, pParent)
 	, m_nRotate(0)
 {
-
+	
 }
 
 CRotateDlg::~CRotateDlg()
@@ -59,11 +59,17 @@ BOOL CRotateDlg::OnInitDialog()
 	CWnd* pImageWnd = GetDlgItem(IDC_IMAGE_PREVIEW);
 	pImageWnd->GetClientRect(rect);
 
+	Tl = rect.TopLeft();
+	Br = rect.BottomRight();
+
 	// 픽쳐 컨트롤의 크기에 맞게 입력 영상의 복사본의 크기를 조절한다.
 	IppByteImage imgSrc, imgDst;
 	IppDibToImage(m_DibSrc, imgSrc);
 	IppResizeNearest(imgSrc, imgDst, rect.Width(), rect.Height());
 	IppImageToDib(imgDst, m_DibSrc);
+
+	width = m_DibSrc.GetWidth();
+	height = m_DibSrc.GetHeight();
 
 	// 초기 임계값에 의한 미리보기 이진화 영상 만들기
 	MakePreviewImage();
@@ -78,7 +84,7 @@ void CRotateDlg::OnPaint()
 					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
 					   // 그리기 메시지에 대해서는 CDialogEx::OnPaint()을(를) 호출하지 마십시오.
 	CPaintDC dcPreview(GetDlgItem(IDC_IMAGE_PREVIEW));
-	m_DibRes.Draw(dcPreview.m_hDC, 0, 0);
+	m_DibRes.Draw(dcPreview.m_hDC, 0, 0, width, height);
 }
 
 void CRotateDlg::SetImage(IppDib& Dib)
@@ -114,7 +120,11 @@ void CRotateDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 		// 현재 설정된 임계값을 이용하여 미리보기 영상의 이진화를 수행한다.
 		MakePreviewImage();
-		Invalidate(FALSE);
+		CRect r;
+		r = { Tl.x, Tl.y, Br.x + 10, Br.y + 10 };
+		
+		InvalidateRect(&r, TRUE);
+		// Invalidate(FALSE);
 	}
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
@@ -133,5 +143,11 @@ void CRotateDlg::OnChangeRotateEdit()
 
 	// 현재 설정된 임계값을 이용하여 미리보기 영상의 이진화를 수행한다.
 	MakePreviewImage();
-	Invalidate(FALSE);
+	CRect r;
+	r = { Tl.x, Tl.y, Br.x + 10, Br.y + 10 };
+
+	InvalidateRect(&r, TRUE);
+	
+	/*MakePreviewImage();
+	Invalidate(TRUE);*/
 }

@@ -166,6 +166,7 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	// ON_LBN_DBLCLK(IDC_LIST_FILTER, &CVisionImageDlg::OnLbnDblclkListFilter)
 	ON_BN_CLICKED(IDC_BUTTON_INOUTPUT, &CVisionImageDlg::OnClickedButtonInoutput)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_RECIPE, &CVisionImageDlg::OnTcnSelchangeTabRecipe)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -812,7 +813,7 @@ void CVisionImageDlg::OnClickedButtonMag()
 		cout << "영상 확대" << endl;
 		cout << endl;
 
-		Invalidate(TRUE);
+		Invalidate(FALSE);
 		
 		if (m_bMagFlag == FALSE)
 		{
@@ -838,7 +839,7 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		SmallCorY = m_SmallPic.Height() - static_cast<int>((float)ImageCorY * SfRatioH);
 
 		UpdateData(FALSE);
-		Invalidate(TRUE);
+		Invalidate(FALSE);
 		
 	}
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
@@ -857,7 +858,7 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		SmallCorX = static_cast<int>((float)ImageCorX * SfRatioW);
 
 		UpdateData(FALSE);
-		Invalidate(TRUE);
+		Invalidate(FALSE);
 		
 	}
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
@@ -889,7 +890,7 @@ void CVisionImageDlg::DrawLine()
 	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY - PrintH, SmallCorX, SmallCorY - PrintH);
 	 g.DrawLine(&pen, SmallCorX, SmallCorY - PrintH, SmallCorX, SmallCorY);
 
-	 Invalidate(TRUE);
+	 Invalidate(FALSE);
 }
 
 void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
@@ -1238,3 +1239,11 @@ void CVisionImageDlg::GetIndexD(int GetIndex)
 	}
 }
 
+
+
+BOOL CVisionImageDlg::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	
+	return CDialogEx::OnEraseBkgnd(pDC);
+}
