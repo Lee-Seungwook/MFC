@@ -31,7 +31,8 @@ private:
 	BOOL m_bCurImgLoad; // 이미지 불러 왔을 때의 마우스 좌표를 출력하기 위한 플래그
 	BOOL m_bCurImgMag; // 이미지 확대 했을 때의 마우스 좌표를 출력하기 위한 플래그
 	BOOL m_bIOFlag; // 작업 이전, 이후 영상 전환 플래그
-	CPoint m_pRectTl, m_pRectBr;
+	CPoint m_pRectTl, m_pRectBr; // 본 영상의 좌표
+	CPoint m_pSmallRectTl, m_pSmallRectBr; // 확대 미리보기 영상의 좌표
 
 	CSliderCtrl m_SliderWidth;
 	CSliderCtrl m_SliderHeight;

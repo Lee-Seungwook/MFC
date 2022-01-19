@@ -221,6 +221,9 @@ BOOL CVisionImageDlg::OnInitDialog()
 	m_pRectTl = m_Image_rect.TopLeft();
 	m_pRectBr = m_Image_rect.BottomRight();
 
+	m_pSmallRectTl = m_SmallPic.TopLeft();
+	m_pSmallRectBr = m_SmallPic.BottomRight();
+
 	/*Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);*/
 
@@ -364,6 +367,10 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 
 		p = imgSrc.GetPixels2D();
 
+		/*CRect r;
+		r = { m_pRectTl.x, m_pRectTl.y, m_pRectBr.x + 10, m_pRectBr.y + 10 };
+
+		InvalidateRect(&r, TRUE);*/
 		Invalidate(TRUE);
 		cout << "영상 출력" << endl;
 		cout << endl;
@@ -813,7 +820,12 @@ void CVisionImageDlg::OnClickedButtonMag()
 		cout << "영상 확대" << endl;
 		cout << endl;
 
-		Invalidate(FALSE);
+		/*CRect r;
+		r = { m_pSmallRectTl.x, m_pSmallRectTl.y, m_pSmallRectBr.x + 10, m_pSmallRectBr.y + 10 };
+
+		InvalidateRect(&r, TRUE);*/
+
+		Invalidate(TRUE);
 		
 		if (m_bMagFlag == FALSE)
 		{
@@ -839,7 +851,18 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		SmallCorY = m_SmallPic.Height() - static_cast<int>((float)ImageCorY * SfRatioH);
 
 		UpdateData(FALSE);
-		Invalidate(FALSE);
+		
+		CRect r;
+		r = { m_pSmallRectTl.x, m_pSmallRectTl.y, m_pSmallRectBr.x + 10, m_pSmallRectBr.y + 10 };
+
+		InvalidateRect(&r, FALSE);
+
+		r = NULL;
+		r = { m_pRectTl.x, m_pRectTl.y, m_pRectBr.x + 10, m_pRectBr.y + 10 };
+
+		InvalidateRect(&r, FALSE);
+
+		// Invalidate(TRUE);
 		
 	}
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
@@ -858,7 +881,18 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		SmallCorX = static_cast<int>((float)ImageCorX * SfRatioW);
 
 		UpdateData(FALSE);
-		Invalidate(FALSE);
+
+		CRect r;
+		r = { m_pSmallRectTl.x, m_pSmallRectTl.y, m_pSmallRectBr.x + 10, m_pSmallRectBr.y + 10 };
+
+		InvalidateRect(&r, FALSE);
+
+		r = NULL;
+		r = { m_pRectTl.x, m_pRectTl.y, m_pRectBr.x + 10, m_pRectBr.y + 10 };
+
+		InvalidateRect(&r, FALSE);
+
+		// Invalidate(TRUE);
 		
 	}
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
