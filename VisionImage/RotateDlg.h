@@ -29,11 +29,11 @@ public:
 	int m_nRotate;
 
 public:
-	// void SetImage(IppDib& dib);
-	// void MakePreviewImage();
+	void SetImage(IppDib& dib);
+	void MakePreviewImage();
 
 	virtual BOOL OnInitDialog();
-	// afx_msg void OnPaint();
+	afx_msg void OnPaint();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnChangeRotateEdit();
 };

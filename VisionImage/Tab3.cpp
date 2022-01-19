@@ -43,11 +43,11 @@ BOOL CTab3::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
-	m_ListDetect.InsertString(0, _T("EdgeRoberts"));
-	m_ListDetect.InsertString(1, _T("EdgePrewitt"));
-	m_ListDetect.InsertString(2, _T("EdgeSobel"));
-	m_ListDetect.InsertString(3, _T("Canny"));
-	m_ListDetect.InsertString(4, _T("HoughLine"));
+	m_ListDetect.InsertString(0, _T("Edge_Roberts"));
+	m_ListDetect.InsertString(1, _T("Edge_Prewitt"));
+	m_ListDetect.InsertString(2, _T("Edge_Sobel"));
+	m_ListDetect.InsertString(3, _T("Edge_Canny"));
+	m_ListDetect.InsertString(4, _T("Hough_Line"));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.

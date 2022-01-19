@@ -132,15 +132,15 @@ public:
 
 	void DbcFilterGaussian(IppByteImage& imgWork); // 가우시안 필터 다이얼로그 활성
 	void DbcInverse(IppByteImage& imgWork); // 영상 반전
-	void DbcContrast(IppByteImage& imgWork); // 영상 명암비 조절
-	void DbcBrightness(IppByteImage& imgWork); // 영상 밝기 조절
-	void DbcGammaCorrection(IppByteImage& imgWork); // 영상 감마 조절
+	void DbcContrast(IppDib& DibWork); // 영상 명암비 조절
+	void DbcBrightness(IppDib& DibWork); // 영상 밝기 조절
+	void DbcGammaCorrection(IppDib& DibWork); // 영상 감마 조절
 	void DbcLaplacian(IppByteImage& imgWork); // 라플라시안 필터
 	void DbcUnsharpMask(IppByteImage& imgWork); // 언샤프마스크 필터
 	void DbcHighboost(IppByteImage& imgWork); // 하이부스트 필터
 
-	void DbcBinary(IppDib& dibWork); // 이진화
-	void DbcRotate(IppByteImage& imgWork); // 회전 수행
+	void DbcBinary(IppDib& DibWork); // 이진화
+	void DbcRotate(IppDib& DibWork); // 회전 수행
 
 	void DbcEdgeRoberts(IppByteImage& imgWork); // 엣지 로버츠
 	void DbcEdgePrewitt(IppByteImage& imgWork); // 엣지 프리윗

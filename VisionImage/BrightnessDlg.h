@@ -21,9 +21,18 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
+	IppDib m_DibSrc; // 입력 영상의 축소 복사본
+	IppDib m_DibRes; // 회전을 적용한 영상
+
 	CSliderCtrl m_sliderBrightness;
 	int m_nBrightness;
+
+public:
+	void SetImage(IppDib& dib);
+	void MakePreviewImage();
+
 	virtual BOOL OnInitDialog();
+	afx_msg void OnPaint();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnChangeBrightnessEdit();
 };

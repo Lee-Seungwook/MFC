@@ -387,6 +387,8 @@ void CVisionImageDlg::DbcFilterGaussian(IppByteImage& imgWork)
 		cout << endl;
 
 		SetImage(dib);
+		
+		m_ListBox.AddString(_T("Filter_Gaussian"));
 	}
 }
 
@@ -400,14 +402,20 @@ void CVisionImageDlg::DbcInverse(IppByteImage& imgWork)
 	cout << endl;
 
 	SetImage(dib);
+
+	m_ListBox.AddString(_T("Inverse"));
 }
 
-void CVisionImageDlg::DbcBrightness(IppByteImage& imgWork)
+void CVisionImageDlg::DbcBrightness(IppDib& DibWork)
 {
 	CBrightnessDlg dlg;
+	IppDib Dib = DibWork;
+
+	dlg.SetImage(Dib);
 	if (dlg.DoModal() == IDOK)
 	{
-		IppByteImage imgSrc = imgWork;
+		IppByteImage imgSrc;
+		IppDibToImage(Dib, imgSrc);
 		IppBrightness(imgSrc, dlg.m_nBrightness);
 		IppImageToDib(imgSrc, dib);
 
@@ -415,38 +423,52 @@ void CVisionImageDlg::DbcBrightness(IppByteImage& imgWork)
 		cout << endl;
 
 		SetImage(dib);
+
+		m_ListBox.AddString(_T("Brightness"));
 	}
 }
 
-void CVisionImageDlg::DbcContrast(IppByteImage& imgWork)
+void CVisionImageDlg::DbcContrast(IppDib& DibWork)
 {
 	CContrastDlg dlg;
+	IppDib Dib = DibWork;
+
+	dlg.SetImage(Dib);
 	if (dlg.DoModal() == IDOK)
 	{
-		IppByteImage imgSrc = imgWork;
-		IppBrightness(imgSrc, dlg.m_nContrast);
+		IppByteImage imgSrc;
+		IppDibToImage(Dib, imgSrc);
+		IppContrast(imgSrc, dlg.m_nContrast);
 		IppImageToDib(imgSrc, dib);
 
 		cout << "영상 명암비 적용" << endl;
 		cout << endl;
 
 		SetImage(dib);
+
+		m_ListBox.AddString(_T("Contrast"));
 	}
 }
 
-void CVisionImageDlg::DbcGammaCorrection(IppByteImage& imgWork)
+void CVisionImageDlg::DbcGammaCorrection(IppDib& DibWork)
 {
 	CGammaCorrectionDlg dlg;
+	IppDib Dib = DibWork;
+
+	dlg.SetImage(Dib);
 	if (dlg.DoModal() == IDOK)
 	{
-		IppByteImage imgSrc = imgWork;
-		IppBrightness(imgSrc, dlg.m_fGamma);
+		IppByteImage imgSrc;
+		IppDibToImage(Dib, imgSrc);
+		IppGammaCorrection(imgSrc, dlg.m_fGamma);
 		IppImageToDib(imgSrc, dib);
 
 		cout << "영상 감마 조절 적용" << endl;
 		cout << endl;
 
 		SetImage(dib);
+
+		m_ListBox.AddString(_T("Gamma_Correction"));
 	}
 }
 
@@ -461,6 +483,8 @@ void CVisionImageDlg::DbcLaplacian(IppByteImage& imgWork)
 	cout << endl;
 
 	SetImage(dib);
+
+	m_ListBox.AddString(_T("Filter_Laplacian"));
 }
 
 void CVisionImageDlg::DbcUnsharpMask(IppByteImage& imgWork)
@@ -474,6 +498,8 @@ void CVisionImageDlg::DbcUnsharpMask(IppByteImage& imgWork)
 	cout << endl;
 
 	SetImage(dib);
+
+	m_ListBox.AddString(_T("Filter_UnsharpMask"));
 }
 
 void CVisionImageDlg::DbcHighboost(IppByteImage& imgWork)
@@ -488,6 +514,8 @@ void CVisionImageDlg::DbcHighboost(IppByteImage& imgWork)
 	cout << endl;
 
 	SetImage(dib);
+
+	m_ListBox.AddString(_T("Filter_Highboost"));
 }
 
 void CVisionImageDlg::DbcBinary(IppDib& DibWork)
@@ -509,17 +537,21 @@ void CVisionImageDlg::DbcBinary(IppDib& DibWork)
 		cout << endl;
 
 		SetImage(dib);
+
+		m_ListBox.AddString(_T("Binary"));
 	}
 }
 
-void CVisionImageDlg::DbcRotate(IppByteImage& imgWork)
+void CVisionImageDlg::DbcRotate(IppDib& DibWork)
 {
 	CRotateDlg dlg;
-	IppByteImage imgSrc;
-	imgSrc = imgWork;
+	IppDib Dib = DibWork;
+
+	dlg.SetImage(Dib);
 	if (dlg.DoModal() == IDOK)
 	{
-		IppByteImage imgDst;
+		IppByteImage imgSrc, imgDst;
+		IppDibToImage(Dib, imgSrc);
 		IppRotate(imgSrc, imgDst, dlg.m_nRotate);
 		IppImageToDib(imgDst, dib);
 
@@ -527,6 +559,8 @@ void CVisionImageDlg::DbcRotate(IppByteImage& imgWork)
 		cout << endl;
 
 		SetImage(dib);
+
+		m_ListBox.AddString(_T("Rotate"));
 	}
 }
 
@@ -542,6 +576,7 @@ void CVisionImageDlg::DbcEdgeRoberts(IppByteImage& imgWork)
 
 	SetImage(dib);
 	
+	m_ListBox.AddString(_T("Edgg_Roberts"));
 }
 
 void CVisionImageDlg::DbcEdgePrewitt(IppByteImage& imgWork)
@@ -555,6 +590,8 @@ void CVisionImageDlg::DbcEdgePrewitt(IppByteImage& imgWork)
 	cout << endl;
 
 	SetImage(dib);
+
+	m_ListBox.AddString(_T("Edge_Prewitt"));
 }
 
 void CVisionImageDlg::DbcEdgeSobel(IppByteImage& imgWork)
@@ -568,6 +605,8 @@ void CVisionImageDlg::DbcEdgeSobel(IppByteImage& imgWork)
 	cout << endl;
 
 	SetImage(dib);
+
+	m_ListBox.AddString(_T("Edge_Sobel"));
 }
 
 void CVisionImageDlg::DbcEdgeCanny(IppByteImage& imgWork)
@@ -596,6 +635,8 @@ void CVisionImageDlg::DbcEdgeCanny(IppByteImage& imgWork)
 		cout << endl;
 
 		SetImage(dib);
+
+		m_ListBox.AddString(_T("Edge_Canny"));
 	}
 }
 
@@ -630,6 +671,8 @@ void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 		cout << endl;
 
 		SetImage(dib);
+
+		m_ListBox.AddString(_T("Hough_Line"));
 	}
 }
 
@@ -685,6 +728,7 @@ void CVisionImageDlg::OnClickedButtonOpen()
 			GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
 			GetDlgItem(IDC_BUTTON_MAG)->EnableWindow(TRUE);
 			GetDlgItem(IDC_BUTTON_INOUTPUT)->EnableWindow(TRUE);
+			GetDlgItem(IDC_TAB_RECIPE)->EnableWindow(TRUE);
 
 		}
 		else
@@ -1066,15 +1110,15 @@ void CVisionImageDlg::GetIndexF(int GetIndex)
 		break;
 
 	case 2:
-		DbcBrightness(imgWork);
+		DbcBrightness(DibWork);
 		break;
 
 	case 3:
-		DbcContrast(imgWork);
+		DbcContrast(DibWork);
 		break;
 
 	case 4:
-		DbcGammaCorrection(imgWork);
+		DbcGammaCorrection(DibWork);
 		break;
 
 	case 5:
@@ -1130,7 +1174,7 @@ void CVisionImageDlg::GetIndexI(int GetIndex)
 		break;
 
 	case 1:
-		DbcRotate(imgWork);
+		DbcRotate(DibWork);
 		break;
 
 	default:

@@ -44,10 +44,10 @@ BOOL CTab1::OnInitDialog()
 	m_ListFilter.InsertString(1, _T("Inverse"));
 	m_ListFilter.InsertString(2, _T("Brightness"));
 	m_ListFilter.InsertString(3, _T("Contrast"));
-	m_ListFilter.InsertString(4, _T("GammaCorrection"));
-	m_ListFilter.InsertString(5, _T("Filter Laplacian"));
-	m_ListFilter.InsertString(6, _T("Filter UnsharpMask"));
-	m_ListFilter.InsertString(7, _T("Filter Hightboost"));
+	m_ListFilter.InsertString(4, _T("Gamma_Correction"));
+	m_ListFilter.InsertString(5, _T("Filter_Laplacian"));
+	m_ListFilter.InsertString(6, _T("Filter_UnsharpMask"));
+	m_ListFilter.InsertString(7, _T("Filter_Hightboost"));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
