@@ -76,8 +76,7 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
-//	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnEnChangeGaussianEdit();
+
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
@@ -293,25 +292,38 @@ void CVisionImageDlg::OnPaint()
 	}
 	else if (m_bMagFlag == TRUE)
 	{
-		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, nThumbImgWidth, nThumbImgHeight,
-			ImageCorX, ImageCorY, nThumbImgWidth / 3, nThumbImgHeight / 3);
+		if (nThumbImgWidth > nOriginImgWidth || nThumbImgHeight > nOriginImgHeight)
+		{
+			m_DibRes.Draw(dcPreview.m_hDC, 0, 0, nOriginImgWidth, nOriginImgHeight);
+		}
+		else if (nThumbImgWidth < nOriginImgWidth || nThumbImgHeight < nOriginImgHeight)
+		{
+			m_DibRes.Draw(dcPreview.m_hDC, 0, 0, nThumbImgWidth, nThumbImgHeight,
+				ImageCorX, ImageCorY, nThumbImgWidth / 3, nThumbImgHeight / 3);
 
-		m_DibRes.Draw(dcSmall.m_hDC, 0, 0, m_SmallPic.Width(), m_SmallPic.Height());
+			m_DibRes.Draw(dcSmall.m_hDC, 0, 0, m_SmallPic.Width(), m_SmallPic.Height());
 
-		int ThumbRect_Width = m_SmallPic.Width() / 3;
-		int ThumbRect_Height = m_SmallPic.Height() / 3;
+			int ThumbRect_Width = m_SmallPic.Width() / 3;
+			int ThumbRect_Height = m_SmallPic.Height() / 3;
 
-		CPen pen;
-		pen.CreatePen(PS_SOLID, 3, RGB(0, 255, 0));
-		CPen* oldPen = dcSmall.SelectObject(&pen);
-		dcSmall.MoveTo(SmallCorX, SmallCorY);
-		dcSmall.LineTo(SmallCorX + ThumbRect_Width, SmallCorY);
-		dcSmall.LineTo(SmallCorX + ThumbRect_Width, SmallCorY + ThumbRect_Height);
-		dcSmall.LineTo(SmallCorX, SmallCorY + ThumbRect_Height);
-		dcSmall.LineTo(SmallCorX, SmallCorY);
+			CPen pen;
+			pen.CreatePen(PS_SOLID, 3, RGB(0, 255, 0));
+			CPen* oldPen = dcSmall.SelectObject(&pen);
+			dcSmall.MoveTo(SmallCorX, SmallCorY);
+			dcSmall.LineTo(SmallCorX + ThumbRect_Width, SmallCorY);
+			dcSmall.LineTo(SmallCorX + ThumbRect_Width, SmallCorY + ThumbRect_Height);
+			dcSmall.LineTo(SmallCorX, SmallCorY + ThumbRect_Height);
+			dcSmall.LineTo(SmallCorX, SmallCorY);
 
-		dcSmall.SelectObject(oldPen);
-		pen.DeleteObject();
+			dcSmall.SelectObject(oldPen);
+			pen.DeleteObject();
+		}
+		else
+		{
+			AfxMessageBox(_T("영상 확인 필요"));
+			cout << "Image Draw Error onPaint()" << endl;
+			printf("\n");
+		}
 	}
 	// ::ReleaseDC(m_hWnd, dcPreview);
 
@@ -336,7 +348,9 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 	nOriginImgWidth = m_DibSrc.GetWidth();
 
 	fRatio = min((float)nPreviewWidth / (float)nOriginImgWidth, (float)nPreviewHeight / (float)nOriginImgHeight);
-	fPtRatio = min((float)nOriginImgWidth / (float)nPreviewWidth, (float)nOriginImgHeight / (float)nPreviewHeight);
+	// fPtRatio = min((float)nOriginImgWidth / (float)nPreviewWidth, (float)nOriginImgHeight / (float)nPreviewHeight);
+	// fPtRatio를 이용하여 작은 영상 크기 설정 시 밑의 조건문에 부합하는 것이 없어 너비와 높이가 0인 영상을 만들어 동적할당을 함
+	// 이때, 동적할당을 해제하는데, 메모리 접근 오류로 인해 디버그 오류가 생기는 것으로 보인다.
 
 	if (fRatio < 1)
 	{
@@ -344,24 +358,22 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 		nThumbImgWidth = static_cast<int>(nOriginImgWidth * fRatio);
 		nThumbImgHeight = static_cast<int>(nOriginImgHeight * fRatio);
 	}
-	else
+	else if (fRatio >= 1)
 	{
 		//썸네일이 픽처컨트롤의 크기보다 작다면 원본 썸네일 이미지 크기를 그대로 출력한다
-		nThumbImgWidth = (int)(nOriginImgWidth*0.99);
-		nThumbImgHeight = (int)(nOriginImgHeight*0.99);
+		nThumbImgWidth = static_cast<int>(nOriginImgWidth* fRatio);
+		nThumbImgHeight = static_cast<int>(nOriginImgHeight* fRatio);
 	}
-
 
 	if (m_DibSrc.GetBitCount() == 8)
 	{
 		IppByteImage imgSrc, imgTmp, imgDst;
 		IppDibToImage(m_DibSrc, imgSrc);
 		IppFilterWeightedMean(imgSrc, imgTmp);
-		// IppResizeBilinear(imgSrc, imgDst, nThumbImgWidth, nThumbImgHeight);
 		IppResizeCubic(imgTmp, imgDst, nThumbImgWidth, nThumbImgHeight);
 		IppImageToDib(imgDst, m_DibRes);
 
-		p = imgSrc.GetPixels2D();
+		// p = imgSrc.GetPixels2D();
 
 		/*CRect r;
 		r = { m_pRectTl.x, m_pRectTl.y, m_pRectBr.x + 10, m_pRectBr.y + 10 };
@@ -369,7 +381,7 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 		InvalidateRect(&r, TRUE);*/
 		Invalidate(TRUE);
 		cout << "영상 출력" << endl;
-		cout << endl;
+		printf("\n");
 	}
 	else
 	{
@@ -388,7 +400,7 @@ void CVisionImageDlg::DbcFilterGaussian(IppByteImage& imgWork)
 		IppImageToDib(imgDst, dib);
 		
 		cout << "가우시안 필터 적용" << endl;
-		cout << endl;
+		printf("\n");
 
 		SetImage(dib);
 		
@@ -403,7 +415,7 @@ void CVisionImageDlg::DbcInverse(IppByteImage& imgWork)
 	IppImageToDib(imgSrc, dib);
 
 	cout << "영상 반전 적용" << endl;
-	cout << endl;
+	printf("\n");
 
 	SetImage(dib);
 
@@ -424,7 +436,7 @@ void CVisionImageDlg::DbcBrightness(IppDib& DibWork)
 		IppImageToDib(imgSrc, dib);
 
 		cout << "영상 밝기 적용" << endl;
-		cout << endl;
+		printf("\n");
 
 		SetImage(dib);
 
@@ -446,7 +458,7 @@ void CVisionImageDlg::DbcContrast(IppDib& DibWork)
 		IppImageToDib(imgSrc, dib);
 
 		cout << "영상 명암비 적용" << endl;
-		cout << endl;
+		printf("\n");
 
 		SetImage(dib);
 
@@ -468,7 +480,7 @@ void CVisionImageDlg::DbcGammaCorrection(IppDib& DibWork)
 		IppImageToDib(imgSrc, dib);
 
 		cout << "영상 감마 조절 적용" << endl;
-		cout << endl;
+		printf("\n");
 
 		SetImage(dib);
 
@@ -484,7 +496,7 @@ void CVisionImageDlg::DbcLaplacian(IppByteImage& imgWork)
 	IppImageToDib(imgDst, dib);
 
 	cout << "라플라시안 필터 적용" << endl;
-	cout << endl;
+	printf("\n");
 
 	SetImage(dib);
 
@@ -499,7 +511,7 @@ void CVisionImageDlg::DbcUnsharpMask(IppByteImage& imgWork)
 	IppImageToDib(imgDst, dib);
 
 	cout << "언샤프 마스크 필터 적용" << endl;
-	cout << endl;
+	printf("\n");
 
 	SetImage(dib);
 
@@ -515,7 +527,7 @@ void CVisionImageDlg::DbcHighboost(IppByteImage& imgWork)
 	IppImageToDib(imgDst, dib);
 
 	cout << "하이부스트 필터 적용" << endl;
-	cout << endl;
+	printf("\n");
 
 	SetImage(dib);
 
@@ -538,7 +550,7 @@ void CVisionImageDlg::DbcBinary(IppDib& DibWork)
 		IppImageToDib(imgDst, dib);
 
 		cout << "영상의 이진화 적용" << endl;
-		cout << endl;
+		printf("\n");
 
 		SetImage(dib);
 
@@ -560,7 +572,7 @@ void CVisionImageDlg::DbcRotate(IppDib& DibWork)
 		IppImageToDib(imgDst, dib);
 
 		cout << "영상의 회전 적용" << endl;
-		cout << endl;
+		printf("\n");
 
 		SetImage(dib);
 
@@ -576,7 +588,7 @@ void CVisionImageDlg::DbcEdgeRoberts(IppByteImage& imgWork)
 	IppImageToDib(imgDst, dib);
 
 	cout << "로버츠 엣지 검출" << endl;
-	cout << endl;
+	printf("\n");
 
 	SetImage(dib);
 	
@@ -591,7 +603,7 @@ void CVisionImageDlg::DbcEdgePrewitt(IppByteImage& imgWork)
 	IppImageToDib(imgDst, dib);
 
 	cout << "프리윗 엣지 검출" << endl;
-	cout << endl;
+	printf("\n");
 
 	SetImage(dib);
 
@@ -606,7 +618,7 @@ void CVisionImageDlg::DbcEdgeSobel(IppByteImage& imgWork)
 	IppImageToDib(imgDst, dib);
 
 	cout << "소벨 엣지 검출" << endl;
-	cout << endl;
+	printf("\n");
 
 	SetImage(dib);
 
@@ -636,7 +648,7 @@ void CVisionImageDlg::DbcEdgeCanny(IppByteImage& imgWork)
 		IppImageToDib(imgEdge, dib);
 
 		cout << "캐니 엣지 검출" << endl;
-		cout << endl;
+		printf("\n");
 
 		SetImage(dib);
 
@@ -672,7 +684,7 @@ void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 		IppImageToDib(imgSrc, dib);
 
 		cout << "허프 직선 검출" << endl;
-		cout << endl;
+		printf("\n");
 
 		SetImage(dib);
 
@@ -710,7 +722,7 @@ void CVisionImageDlg::OnClickedButtonOpen()
 				dib = m_Dib;
 				
 				cout << "영상 불러옴" << endl;
-				cout << endl;
+				printf("\n");
 			}
 			else if (m_Dib.GetBitCount() == 24)
 			{
@@ -724,7 +736,7 @@ void CVisionImageDlg::OnClickedButtonOpen()
 				dib = m_Dib;
 
 				cout << "영상 불러옴" << endl;
-				cout << endl;
+				printf("\n");
 			}
 
 			SetImage(m_Dib);
@@ -761,7 +773,7 @@ void CVisionImageDlg::OnClickedButtonSave()
 			m_DibSave.Save(CT2A(strPathName));
 
 			cout << "영상 저장" << endl;
-			cout << endl;
+			printf("\n");
 		}
 		else
 		{
@@ -778,6 +790,11 @@ void CVisionImageDlg::OnClickedButtonMag()
 		m_bMagFlag = !m_bMagFlag;
 		m_bSaveFlag = FALSE;
 		m_bCurImgMag = !m_bCurImgMag;
+
+		if (m_bMagFlag == FALSE)
+		{
+			m_SmallPic.SetRectEmpty();
+		}
 		
 		ImageCorX = 0;
 		ImageCorY = (nThumbImgHeight * 2 / 3);
@@ -809,13 +826,18 @@ void CVisionImageDlg::OnClickedButtonMag()
 		m_SliderHeight.SetPageSize(FreqH);
 		m_SliderWidth.SetPageSize(FreqW);
 
+		UpdateData(TRUE);
+
+		m_SliderHeight.SetPos(0);
+		m_SliderWidth.SetPos(0);
+
 		m_Thumbnail.GetWindowRect(&m_SmallPic);
 
 		SfRatioW = (float)(m_SmallPic.Width() - m_SmallPic.Width() / 3) / RangeW;
 		SfRatioH = (float)(m_SmallPic.Height() - m_SmallPic.Height() / 3) / RangeH;
 
 		cout << "영상 확대" << endl;
-		cout << endl;
+		printf("\n");
 
 		/*CRect r;
 		r = { m_pSmallRectTl.x, m_pSmallRectTl.y, m_pSmallRectBr.x + 10, m_pSmallRectBr.y + 10 };
@@ -824,16 +846,12 @@ void CVisionImageDlg::OnClickedButtonMag()
 
 		Invalidate(TRUE);
 		
-		if (m_bMagFlag == FALSE)
-		{
-			m_SmallPic.SetRectEmpty();
-		}
+		
 	}
 	else
 	{
 		AfxMessageBox(_T("영상이 없습니다."));
 	}
-	
 }
 
 void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -843,7 +861,6 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	{
 		int nPos = m_SliderHeight.GetPos();
 		ImageCorY = (nThumbImgHeight * 2 / 3) - nPos; // 혹은 요거나 
-		// m_nEditHeight = ImageCorY;
 
 		int tempY = nThumbImgHeight - nPos;
 
