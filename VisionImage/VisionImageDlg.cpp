@@ -298,27 +298,23 @@ void CVisionImageDlg::OnPaint()
 
 		m_DibRes.Draw(dcSmall.m_hDC, 0, 0, m_SmallPic.Width(), m_SmallPic.Height());
 
-		CPaintDC dce(GetDlgItem(IDC_SMALL_IMAGE));
-
-		/*Graphics g(dce);
-
-		Pen pen(Color(255, 255, 0, 0), 3);
-
-		g.DrawLine(&pen, SmallCorX, SmallCorY, SmallCorX + PrintW, SmallCorY);
-		g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY, SmallCorX + PrintW, SmallCorY - PrintH);
-		g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY - PrintH, SmallCorX, SmallCorY - PrintH);
-		g.DrawLine(&pen, SmallCorX, SmallCorY - PrintH, SmallCorX, SmallCorY);*/
+		int ThumbRect_Width = m_SmallPic.Width() / 3;
+		int ThumbRect_Height = m_SmallPic.Height() / 3;
 
 		CPen pen;
 		pen.CreatePen(PS_SOLID, 3, RGB(0, 255, 0));
 		CPen* oldPen = dcSmall.SelectObject(&pen);
 		dcSmall.MoveTo(SmallCorX, SmallCorY);
-		dcSmall.LineTo(SmallCorX + PrintW, SmallCorY);
-		dcSmall.LineTo(SmallCorX + PrintW, SmallCorY - PrintH);
-		dcSmall.LineTo(SmallCorX, SmallCorY - PrintH);
+		dcSmall.LineTo(SmallCorX + ThumbRect_Width, SmallCorY);
+		dcSmall.LineTo(SmallCorX + ThumbRect_Width, SmallCorY + ThumbRect_Height);
+		dcSmall.LineTo(SmallCorX, SmallCorY + ThumbRect_Height);
 		dcSmall.LineTo(SmallCorX, SmallCorY);
+
+		dcSmall.SelectObject(oldPen);
+		pen.DeleteObject();
 	}
-	
+	// ::ReleaseDC(m_hWnd, dcPreview);
+
 
 }
 
@@ -783,10 +779,11 @@ void CVisionImageDlg::OnClickedButtonMag()
 		m_bSaveFlag = FALSE;
 		m_bCurImgMag = !m_bCurImgMag;
 		
+		ImageCorX = 0;
 		ImageCorY = (nThumbImgHeight * 2 / 3);
 
 		SmallCorX = 0;
-		SmallCorY = m_SmallPic.Height() * 1 / 3;
+		SmallCorY = 0; // m_SmallPic.Height() / 3;
 		
 		PrintW = m_SmallPic.Width() / 3;
 		PrintH = m_SmallPic.Height() / 3;
@@ -845,10 +842,12 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	if (m_SliderHeight.GetSafeHwnd() == pScrollBar->GetSafeHwnd())
 	{
 		int nPos = m_SliderHeight.GetPos();
-		ImageCorY = (nThumbImgHeight * 2 / 3) - nPos;
+		ImageCorY = (nThumbImgHeight * 2 / 3) - nPos; // 혹은 요거나 
 		// m_nEditHeight = ImageCorY;
 
-		SmallCorY = m_SmallPic.Height() - static_cast<int>((float)ImageCorY * SfRatioH);
+		int tempY = nThumbImgHeight - nPos;
+
+		SmallCorY = m_SmallPic.Height() - static_cast<int>((float)tempY * SfRatioH); // 요게 문제인듯
 
 		UpdateData(FALSE);
 		
@@ -898,34 +897,34 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
-void CVisionImageDlg::DrawLine()
-{
-	/*CPen *pOldPen, pen;
-	pen.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-
-	pOldPen = pDC->SelectObject(&pen);
-
-	pDC->MoveTo(m_nStartPosX, m_nStartPosY);
-	pDC->LineTo(m_nEndPosX, m_nStartPosY);
-	pDC->LineTo(m_nEndPosX, m_nEndPosY);
-	pDC->LineTo(m_nStartPosX, m_nEndPosY);
-
-	pDC->SelectObject(pOldPen);
-
-	pen.DeleteObject();*/
-	CClientDC dc(GetDlgItem(IDC_SMALL_IMAGE));
-
-	Graphics g(dc);
-
-	Pen pen(Color(255, 255, 0, 0), 3);
-
-	 g.DrawLine(&pen, SmallCorX, SmallCorY, SmallCorX + PrintW, SmallCorY);
-	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY, SmallCorX + PrintW, SmallCorY - PrintH);
-	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY - PrintH, SmallCorX, SmallCorY - PrintH);
-	 g.DrawLine(&pen, SmallCorX, SmallCorY - PrintH, SmallCorX, SmallCorY);
-
-	 Invalidate(FALSE);
-}
+//void CVisionImageDlg::DrawLine()
+//{
+//	/*CPen *pOldPen, pen;
+//	pen.CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+//
+//	pOldPen = pDC->SelectObject(&pen);
+//
+//	pDC->MoveTo(m_nStartPosX, m_nStartPosY);
+//	pDC->LineTo(m_nEndPosX, m_nStartPosY);
+//	pDC->LineTo(m_nEndPosX, m_nEndPosY);
+//	pDC->LineTo(m_nStartPosX, m_nEndPosY);
+//
+//	pDC->SelectObject(pOldPen);
+//
+//	pen.DeleteObject();*/
+//	CClientDC dc(GetDlgItem(IDC_SMALL_IMAGE));
+//
+//	Graphics g(dc);
+//
+//	Pen pen(Color(255, 255, 0, 0), 3);
+//
+//	 g.DrawLine(&pen, SmallCorX, SmallCorY, SmallCorX + PrintW, SmallCorY);
+//	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY, SmallCorX + PrintW, SmallCorY - PrintH);
+//	 g.DrawLine(&pen, SmallCorX + PrintW, SmallCorY - PrintH, SmallCorX, SmallCorY - PrintH);
+//	 g.DrawLine(&pen, SmallCorX, SmallCorY - PrintH, SmallCorX, SmallCorY);
+//
+//	 Invalidate(FALSE);
+//}
 
 void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
