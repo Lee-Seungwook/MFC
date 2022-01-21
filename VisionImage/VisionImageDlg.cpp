@@ -791,11 +791,6 @@ void CVisionImageDlg::OnClickedButtonMag()
 		m_bSaveFlag = FALSE;
 		m_bCurImgMag = !m_bCurImgMag;
 
-		if (m_bMagFlag == FALSE)
-		{
-			m_SmallPic.SetRectEmpty();
-		}
-		
 		ImageCorX = 0;
 		ImageCorY = (nThumbImgHeight * 2 / 3);
 
@@ -808,33 +803,49 @@ void CVisionImageDlg::OnClickedButtonMag()
 		width = nThumbImgWidth;
 		height = nThumbImgHeight;
 
-		int RangeH, RangeW;
-		int FreqH, FreqW;
+		if (m_bMagFlag == FALSE)
+		{
+			m_SmallPic.SetRectEmpty();
 
-		RangeH = height - nThumbImgHeight / 3;
-		RangeW = width - nThumbImgWidth / 3;
+			GetDlgItem(IDC_SLIDER_HEIGHT)->ShowWindow(FALSE);
+			GetDlgItem(IDC_SLIDER_WIDTH)->ShowWindow(FALSE);
+		}
+		else if (m_bMagFlag == TRUE)
+		{
+			if (fRatio < 1)
+			{
+				GetDlgItem(IDC_SLIDER_HEIGHT)->ShowWindow(TRUE);
+				GetDlgItem(IDC_SLIDER_WIDTH)->ShowWindow(TRUE);
+			}
 
-		m_SliderHeight.SetRange(0, RangeH);
-		m_SliderWidth.SetRange(0, RangeW);
+			int RangeH, RangeW;
+			int FreqH, FreqW;
 
-		FreqH = height / 8;
-		FreqW = width / 8;
+			RangeH = height - nThumbImgHeight / 3;
+			RangeW = width - nThumbImgWidth / 3;
 
-		m_SliderHeight.SetTicFreq(FreqH);
-		m_SliderWidth.SetTicFreq(FreqW);
+			m_SliderHeight.SetRange(0, RangeH);
+			m_SliderWidth.SetRange(0, RangeW);
 
-		m_SliderHeight.SetPageSize(FreqH);
-		m_SliderWidth.SetPageSize(FreqW);
+			FreqH = height / 8;
+			FreqW = width / 8;
 
-		UpdateData(TRUE);
+			m_SliderHeight.SetTicFreq(FreqH);
+			m_SliderWidth.SetTicFreq(FreqW);
 
-		m_SliderHeight.SetPos(0);
-		m_SliderWidth.SetPos(0);
+			m_SliderHeight.SetPageSize(FreqH);
+			m_SliderWidth.SetPageSize(FreqW);
 
-		m_Thumbnail.GetWindowRect(&m_SmallPic);
+			UpdateData(TRUE);
 
-		SfRatioW = (float)(m_SmallPic.Width() - m_SmallPic.Width() / 3) / RangeW;
-		SfRatioH = (float)(m_SmallPic.Height() - m_SmallPic.Height() / 3) / RangeH;
+			m_SliderHeight.SetPos(0);
+			m_SliderWidth.SetPos(0);
+
+			m_Thumbnail.GetWindowRect(&m_SmallPic);
+
+			SfRatioW = (float)(m_SmallPic.Width() - m_SmallPic.Width() / 3) / RangeW;
+			SfRatioH = (float)(m_SmallPic.Height() - m_SmallPic.Height() / 3) / RangeH;
+		}
 
 		cout << "영상 확대" << endl;
 		printf("\n");
@@ -845,8 +856,6 @@ void CVisionImageDlg::OnClickedButtonMag()
 		InvalidateRect(&r, TRUE);*/
 
 		Invalidate(TRUE);
-		
-		
 	}
 	else
 	{

@@ -33,6 +33,7 @@
 #define IDC_EDIT_PIXELS                 1010
 #define IDC_LIST_FILTER                 1011
 #define IDC_SIGMA_SLIDER                1012
+#define IDC_LIST_FILE                   1012
 #define IDC_SIGMA_EDIT                  1013
 #define IDC_BUTTON_INOUTPUT             1014
 #define IDC_BRIGHTNESS_SLIDER           1015
@@ -84,7 +85,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        147
 #define _APS_NEXT_COMMAND_VALUE         32786
-#define _APS_NEXT_CONTROL_VALUE         1042
+#define _APS_NEXT_CONTROL_VALUE         1043
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
