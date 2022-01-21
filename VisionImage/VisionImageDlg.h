@@ -65,8 +65,7 @@ private:
 
 	int m_nPixels;
 
-	int m_nEndPosX, m_nEndPosY;
-	int m_nStartPosX, m_nStartPosY;
+	int m_nStartPosX, m_nStartPosY; // 출력 영상 시작 좌표 
 	float m_fHorizontalRatio;
 
 	BYTE **p; // 영상의 픽셀 정보

@@ -115,8 +115,6 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 
 	m_nStartPosX = 0;
 	m_nStartPosY = 0;
-	m_nEndPosX = 0;
-	m_nEndPosY = 0;
 	m_fHorizontalRatio = 0;
 
 	SmallCorX = 0;
@@ -288,17 +286,18 @@ void CVisionImageDlg::OnPaint()
 
 	if (m_bMagFlag == FALSE)
 	{
-		m_DibRes.Draw(dcPreview.m_hDC, 0, 0, nThumbImgWidth, nThumbImgHeight);
+		// m_DibRes.Draw(dcPreview.m_hDC, 0, 0, nThumbImgWidth, nThumbImgHeight);
+		m_DibRes.Draw(dcPreview.m_hDC, m_nStartPosX, m_nStartPosY, nThumbImgWidth, nThumbImgHeight);
 	}
 	else if (m_bMagFlag == TRUE)
 	{
 		if (nThumbImgWidth > nOriginImgWidth || nThumbImgHeight > nOriginImgHeight)
 		{
-			m_DibRes.Draw(dcPreview.m_hDC, 0, 0, nOriginImgWidth, nOriginImgHeight);
+			m_DibRes.Draw(dcPreview.m_hDC, m_nStartPosX, m_nStartPosY, nOriginImgWidth, nOriginImgHeight);
 		}
 		else if (nThumbImgWidth < nOriginImgWidth || nThumbImgHeight < nOriginImgHeight)
 		{
-			m_DibRes.Draw(dcPreview.m_hDC, 0, 0, nThumbImgWidth, nThumbImgHeight,
+			m_DibRes.Draw(dcPreview.m_hDC, m_nStartPosX, m_nStartPosY, nThumbImgWidth, nThumbImgHeight,
 				ImageCorX, ImageCorY, nThumbImgWidth / 3, nThumbImgHeight / 3);
 
 			m_DibRes.Draw(dcSmall.m_hDC, 0, 0, m_SmallPic.Width(), m_SmallPic.Height());
@@ -375,10 +374,9 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 
 		// p = imgSrc.GetPixels2D();
 
-		/*CRect r;
-		r = { m_pRectTl.x, m_pRectTl.y, m_pRectBr.x + 10, m_pRectBr.y + 10 };
+		m_nStartPosX = (nPreviewWidth - nThumbImgWidth) / 2;
+		m_nStartPosY = (nPreviewHeight - nThumbImgHeight) / 2;
 
-		InvalidateRect(&r, TRUE);*/
 		Invalidate(TRUE);
 		cout << "영상 출력" << endl;
 		printf("\n");
