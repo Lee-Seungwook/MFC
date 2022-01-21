@@ -44,14 +44,6 @@ using namespace Gdiplus;
 using namespace std;
 using namespace cv;
 
-#define CONVERT_DIB_TO_BYTEIMAGE(m_Dib, img) \
-	IppByteImage img; \
-	IppDibToImage(m_Dib, img);
-
-#define CONVERT_IMAGE_TO_DIB(img, dib) \
-	IppDib dib; \
-	IppImageToDib(img, dib);
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -115,12 +107,9 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 
 	m_nStartPosX = 0;
 	m_nStartPosY = 0;
-	m_fHorizontalRatio = 0;
 
 	SmallCorX = 0;
 	SmallCorY = 0;
-
-	Tempx = 0;
 
 	fRatio = 1.0f;
 	SfRatioW = 1.0f;
@@ -148,6 +137,7 @@ void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_PIXELS, m_nPixels);
 	DDX_Control(pDX, IDC_LIST_FILTER, m_ListBox);
 	DDX_Control(pDX, IDC_TAB_RECIPE, m_TabRecipe);
+	DDX_Control(pDX, IDC_LIST_FILE, m_ListFile);
 }
 
 BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
@@ -274,11 +264,6 @@ void CVisionImageDlg::OnSysCommand(UINT nID, LPARAM lParam)
 void CVisionImageDlg::OnPaint()
 {
 	CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
-	/*CPen pen;
-	pen.CreatePen(PS_SOLID, 3, RGB(0, 255, 0));
-	CPen* oldPen = dc.SelectObject(&pen);
-	
-	dc.Rectangle(m_pRectTl.x - 5, m_pRectTl.y - 5, m_pRectBr.x + 5, m_pRectBr.y + 5);*/
 
 	// 픽처 컨트롤의 크기에 맞게 입력 영상의 복사본의 크기를 조절
 	CPaintDC dcPreview(GetDlgItem(IDC_IMAGE));
@@ -693,21 +678,16 @@ void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 void CVisionImageDlg::OnClickedButtonOpen()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CString szFilter = _T("Image(*.BMP, *.JPG) | *.BMP;*.JPG; | ALL Files(*.*)|*.*||");
+	IppDib m_Dib;
+	CString szFilter = _T("Image(*.BMP, *.JPG) | *.BMP;*.JPG; ||"); // ALL Files(*.*)|*.*|
 
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, szFilter);
 
 	if (IDOK == dlg.DoModal())
 	{
 		CString strPathName = dlg.GetPathName();
-		
+
 		m_Dib.Load(CT2A(strPathName)); // 큰 이미지 영상 설정 IppDib 사용
-
-		//m_img.Load(strPathName); // 작은 이미지 영상 설정 CImage 사용
-
-		// m_fHorizontalRatio = (float)m_SmallPic.Width() / m_img.GetWidth();
-
-		
 
 		if (m_Dib.IsValid())
 		{
@@ -867,11 +847,11 @@ void CVisionImageDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	if (m_SliderHeight.GetSafeHwnd() == pScrollBar->GetSafeHwnd())
 	{
 		int nPos = m_SliderHeight.GetPos();
-		ImageCorY = (nThumbImgHeight * 2 / 3) - nPos; // 혹은 요거나 
+		ImageCorY = (nThumbImgHeight * 2 / 3) - nPos; 
 
 		int tempY = nThumbImgHeight - nPos;
 
-		SmallCorY = m_SmallPic.Height() - static_cast<int>((float)tempY * SfRatioH); // 요게 문제인듯
+		SmallCorY = m_SmallPic.Height() - static_cast<int>((float)tempY * SfRatioH); 
 
 		UpdateData(FALSE);
 		
@@ -967,6 +947,7 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 			if (rt.PtInRect(point))
 			{ 
 				m_ptX = point.x * fPtRatio; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
+				m_ptX = point.x * fPtRatio; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
 				m_ptY = point.y * fPtRatio;
 
 				m_nEditWidth = m_ptX;
@@ -1003,77 +984,6 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 	
 	CDialogEx::OnMouseMove(nFlags, point);
 }
-
-
-//void CVisionImageDlg::OnLbnDblclkListFilter()
-//{
-//	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-//	int index = m_ListBox.GetCurSel();
-//	
-//	dibPrev = dib;
-//	IppDib DibSrc = dib;
-//	IppDib DibWork;
-//	IppByteImage imgWork, imgRes, imgTmp;
-//
-//	if (DibSrc.GetBitCount() == 24)
-//	{
-//		IppRgbImage imgSrc;
-//		IppByteImage imgDst;
-//
-//		IppDibToImage(DibSrc, imgSrc);
-//		imgDst.Convert(imgSrc);
-//		IppImageToDib(imgDst, DibWork);
-//	}
-//	else if (DibSrc.GetBitCount() == 8)
-//	{
-//		DibWork = DibSrc;
-//	}
-//	else
-//	{
-//		AfxMessageBox(_T("잘못된 파일 형식입니다."));
-//	}
-//
-//	IppDibToImage(DibWork, imgWork);
-//
-//	switch (index)
-//	{
-//	case 0:
-//		DbcFilterGaussian(imgWork);
-//		break;
-//
-//	case 1:
-//		DbcInverse(imgWork);
-//		break;
-//
-//	case 2:
-//		DbcBrightness(imgWork);
-//		break;
-//
-//	case 3:
-//		DbcContrast(imgWork);
-//		break;
-//
-//	case 4:
-//		DbcGammaCorrection(imgWork);
-//		break;
-//
-//	case 5:
-//		DbcLaplacian(imgWork);
-//		break;
-//
-//	case 6:
-//		DbcUnsharpMask(imgWork);
-//		break;
-//
-//	case 7:
-//		DbcHighboost(imgWork);
-//		break;
-//
-//	default:
-//		break;
-//	}
-//}
-
 
 void CVisionImageDlg::OnClickedButtonInoutput()
 {

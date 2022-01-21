@@ -34,21 +34,18 @@ private:
 	CPoint m_pRectTl, m_pRectBr; // 본 영상의 좌표
 	CPoint m_pSmallRectTl, m_pSmallRectBr; // 확대 미리보기 영상의 좌표
 
-	CSliderCtrl m_SliderWidth;
-	CSliderCtrl m_SliderHeight;
+	CSliderCtrl m_SliderWidth; // HScroll
+	CSliderCtrl m_SliderHeight; // VScroll
 
-	CStatic m_Picture;
-	CStatic m_Thumbnail;
+	CStatic m_Picture; // 본 영상 출력
+	CStatic m_Thumbnail; // 미리보기 영상 출력
 
-	CImage m_img;
-
-	CListBox m_ListBox;
+	CListBox m_ListBox; // 활성 레시피 출력 리스트
+	CListBox m_ListFile; // 파일 출력 리스트
 
 	float fRatio; // 원본 영상의 축소 비율
 	float SfRatioW, SfRatioH;
 	float fPtRatio; // 마우스 좌표를 출력하기 위한 비율
-
-	int Tempx;
 
 	int width, height; // 영상의 초기 너비와 높이
 
@@ -60,39 +57,34 @@ private:
 	int nOriginImgWidth, nOriginImgHeight; // 원본 영상의 너비와 높이
 	int nThumbImgWidth, nThumbImgHeight; // 출력 영상의 너비와 높이
 
-	int m_nEditHeight;
-	int m_nEditWidth;
+	int m_nEditHeight; // 픽셀 y 좌표
+	int m_nEditWidth; // 픽셀 x 좌표
 
-	int m_nPixels;
+	int m_nPixels; // 픽셀 수치 값
 
 	int m_nStartPosX, m_nStartPosY; // 출력 영상 시작 좌표 
-	float m_fHorizontalRatio;
 
-	BYTE **p; // 영상의 픽셀 정보
+	BYTE **p; // 영상의 픽셀 정보 -> 데이터 오류로 값 출력이 안됨....
 
 	HWND hWindow;
-	int iBitmapFlag = 0;
-	CBitmap capture_map;
-	unsigned char *arrImage1;
-	unsigned char *arrImage2;
+
 
 // 생성입니다.
 public:
 	CVisionImageDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
-	IppDib m_DibSrc;
-	IppDib m_DibRes;
-	IppDib m_Dib;
-	IppDib m_DibSave;
-	IppDib dib;
-	IppDib dibPrev;
+	IppDib m_DibSrc; // 입력 영상
+	IppDib m_DibRes; // 입력 영상 크기 변환 결과
+	IppDib m_DibSave; // 입력 영상 저장 영상
+	IppDib dib; // 영상 전달을 위해 필요
+	IppDib dibPrev; // 이전 영상 저장
 
-	CTab1 pDlg1;
-	CTab2 pDlg2;
-	CTab3 pDlg3;
+	CTab1 pDlg1; // F Tab
+	CTab2 pDlg2; // I Tab
+	CTab3 pDlg3; // D Tab
 
 	// CTab1 *Tab1;
 
-	CTabCtrl m_TabRecipe;
+	CTabCtrl m_TabRecipe; // 레시피 탭 컨트롤
 
 	CWnd* m_pwndShow;
 
@@ -116,19 +108,17 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnClickedButtonOpen();
-	afx_msg void OnClickedButtonSave();
-	afx_msg void OnClickedButtonMag();
-	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	// afx_msg void OnLbnDblclkListFilter();
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnClickedButtonInoutput();
-	afx_msg void OnTcnSelchangeTabRecipe(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnClickedButtonOpen(); // 파일 열기
+	afx_msg void OnClickedButtonSave(); // 원본 영상으로 저장
+	afx_msg void OnClickedButtonMag(); // 영상 확대
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar); // 수직 이동
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar); // 수평 이동
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point); // 픽셀 좌표 출력
+	afx_msg void OnClickedButtonInoutput(); // 현재, 이전 영상 출력
+	afx_msg void OnTcnSelchangeTabRecipe(NMHDR *pNMHDR, LRESULT *pResult); // 레시피 탭
 
 public:
 	void SetImage(IppDib& dib); // 초기 이미지 설정하여 출력
-	void DrawLine(); // 미리보기 출력 영역 사각형 그리기
 
 	void DbcFilterGaussian(IppByteImage& imgWork); // 가우시안 필터 다이얼로그 활성
 	void DbcInverse(IppByteImage& imgWork); // 영상 반전
@@ -148,12 +138,11 @@ public:
 	void DbcEdgeCanny(IppByteImage& imgWork); // 엣지 캐니
 	void DbcHoughLine(IppByteImage& imgWork); // 허프 직선
 
-	void DbcTemplateMatch(IppByteImage& imgWork);
+	void DbcTemplateMatch(IppByteImage& imgWork); // openCV 템플릿 매칭 사용 (구현 아직 안함)
 
 	void GetIndexF(int GetIndex); // Tab1의 리스트 박스 인덱스를 받기 위함
 	void GetIndexI(int GetIndex); // Tab2의 리스트 박스 인덱스를 받기 위함
 	void GetIndexD(int GetIndex); // Tab3의 리스트 박스 인덱스를 받기 위함
 
-	void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
