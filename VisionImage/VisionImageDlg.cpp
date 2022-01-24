@@ -46,7 +46,8 @@ using namespace std;
 using namespace cv;
 
 #ifdef _DEBUG
-#define new DEBUG_NEW
+#define new new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+// #define new DEBUG_NEW
 #endif
 
 
@@ -116,6 +117,8 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	SfRatioW = 1.0f;
 	SfRatioH = 1.0f;
 	fPtRatio = 1.0f;
+
+	index = 0;
 	
 	m_bMagFlag = FALSE;
 	m_bMoveFlag = FALSE;
@@ -155,6 +158,7 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_INOUTPUT, &CVisionImageDlg::OnClickedButtonInoutput)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_RECIPE, &CVisionImageDlg::OnTcnSelchangeTabRecipe)
 	ON_WM_ERASEBKGND()
+	ON_LBN_DBLCLK(IDC_LIST_FILE, &CVisionImageDlg::OnDblclkListFile)
 END_MESSAGE_MAP()
 
 
@@ -375,11 +379,8 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 
 void CVisionImageDlg::typeImageRead(CString inputType)
 {
-	mVecImage.clear(); // 벡터 초기화 크기 및 인자 0으로 초기화
-
 	CString tpath = mTopPath; // 전역 변수 경로를 저장
 	CString Folderpath; // 상위 폴더 + 확장자 경로를 저장
-	int index = 0;
 
 	// 실행 파일 경로에서 파일 명을 제외한 상위 폴더의 경로를 얻음
 	int nLen = tpath.ReverseFind('\\');
@@ -419,6 +420,15 @@ void CVisionImageDlg::typeImageRead(CString inputType)
 				AfxMessageBox(_T("파일을 불러오지 못했습니다."));
 				break;
 			}
+			else if (!img.empty())
+			{
+				GetDlgItem(IDC_LIST_FILTER)->EnableWindow(TRUE);
+				GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
+				GetDlgItem(IDC_BUTTON_MAG)->EnableWindow(TRUE);
+				GetDlgItem(IDC_BUTTON_INOUTPUT)->EnableWindow(TRUE);
+				GetDlgItem(IDC_TAB_RECIPE)->EnableWindow(TRUE);
+				GetDlgItem(IDC_LIST_FILE)->EnableWindow(TRUE);
+			}
 
 			mVecImage.push_back(img); // 벡터에 영상 파일 저장
 			
@@ -427,11 +437,55 @@ void CVisionImageDlg::typeImageRead(CString inputType)
 				index++;
 				cout << index << " 번 vector에 저장 " << endl;
 				printf("\n");
-				
 			}
-			index++;
 		}
 	}
+}
+
+void CVisionImageDlg::SetIndexFile(int index)
+{
+	int m_Vindex = index;
+	cv::Mat m_Vecimg;
+	IppRgbImage m_DRgbimg;
+	IppByteImage m_DByteimg;
+	IppDib m_Dib;
+
+	m_Vecimg = mVecImage.at(m_Vindex);
+
+	IppMatToImage(m_Vecimg, m_DRgbimg);
+	m_DByteimg.Convert(m_DRgbimg);
+	IppImageToDib(m_DByteimg, m_Dib);
+
+	if (m_Dib.IsValid())
+	{
+		m_DibSave = m_Dib;
+
+		m_bCurImgLoad = TRUE;
+
+		if (m_Dib.GetBitCount() == 8)
+		{
+			dib = m_Dib;
+			
+			cout << "영상 불러옴" << endl;
+			printf("\n");
+		}
+		else if (m_Dib.GetBitCount() == 24)
+		{
+			IppRgbImage imgSrc;
+			IppByteImage imgDst;
+
+			IppDibToImage(m_Dib, imgSrc);
+			imgDst.Convert(imgSrc);
+			IppImageToDib(imgDst, m_Dib);
+
+			dib = m_Dib;
+
+			cout << "영상 불러옴" << endl;
+			printf("\n");
+		}
+		SetImage(m_Dib);
+	}
+	//m_Dib.DestroyBitmap(); // 이걸 안 하면 연속적인 이미지 띄우기가 안됨.
 }
 
 void CVisionImageDlg::DbcFilterGaussian(IppByteImage& imgWork)
@@ -741,6 +795,8 @@ void CVisionImageDlg::OnClickedButtonOpen()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	m_ListFile.ResetContent(); // 파일 목록 리스트 초기화
+	mVecImage.clear(); // 벡터 초기화 크기 및 인자 0으로 초기화
+
 	CString szFilter = _T("Image(*.BMP, *.JPG) | *.BMP;*.JPG; ||"); // ALL Files(*.*)|*.*|
 
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, szFilter); // 파일 선택 다이얼로그 
@@ -755,8 +811,8 @@ void CVisionImageDlg::OnClickedButtonOpen()
 		ImageType = _T(".bmp"); // 확장자 문자열 저장
 		typeImageRead(ImageType); // 파일 목록 저장 함수 호출
 
-		//ImageType = _T(".png"); // 확장자 문자열 저장
-		//typeImageRead(ImageType); // 파일 목록 저장 함수 호출
+		ImageType = _T(".png"); // 확장자 문자열 저장
+		typeImageRead(ImageType); // 파일 목록 저장 함수 호출
 	}
 	
 	// BROWSEINFO를 활용하여 영상 목록을 리스트에 추가하고, 벡터에 영상을 대입 (폴더 내의 파일들을 확인할 수 없는 단점 있음)
@@ -837,6 +893,12 @@ void CVisionImageDlg::OnClickedButtonOpen()
 	//m_Dib.DestroyBitmap(); // 이걸 안 하면 연속적인 이미지 띄우기가 안됨.
 }
 
+void CVisionImageDlg::OnDblclkListFile()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	int index = m_ListFile.GetCurSel();
+	SetIndexFile(index);
+}
 
 void CVisionImageDlg::OnClickedButtonSave()
 {
@@ -1317,3 +1379,6 @@ BOOL CVisionImageDlg::OnEraseBkgnd(CDC* pDC)
 	
 	return CDialogEx::OnEraseBkgnd(pDC);
 }
+
+
+

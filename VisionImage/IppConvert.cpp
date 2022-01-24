@@ -140,7 +140,7 @@ void IppImageToMat(IppRgbImage& img, cv::Mat& mat)
 
 void IppMatToImage(cv::Mat& mat, IppByteImage& img)
 {
-	CV_Assert(mat.depth() == CV_8U);
+	CV_Assert(mat.type() == CV_8UC1); // Grayscale img
 
 	int w = mat.cols;
 	int h = mat.rows;
@@ -159,7 +159,7 @@ void IppMatToImage(cv::Mat& mat, IppByteImage& img)
 
 void IppMatToImage(cv::Mat& mat, IppRgbImage& img)
 {
-	CV_Assert(mat.depth() == CV_8UC3);
+	CV_Assert(mat.type() == CV_8UC3); // True color Image
 
 	int w = mat.cols;
 	int h = mat.rows;

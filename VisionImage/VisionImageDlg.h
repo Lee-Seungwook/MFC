@@ -69,6 +69,8 @@ private:
 
 	int m_nStartPosX, m_nStartPosY; // 출력 영상 시작 좌표 
 
+	int index; // 벡터 인덱스 콘솔 출력
+
 	BYTE **p; // 영상의 픽셀 정보 -> 데이터 오류로 값 출력이 안됨....
 
 	HWND hWindow;
@@ -125,7 +127,8 @@ public:
 public:
 	void SetImage(IppDib& dib); // 초기 이미지 설정하여 출력
 
-	void typeImageRead(CString inputType);
+	void typeImageRead(CString inputType); // 리스트 컨트롤 목록 생성 및 mVecImage에 영상 저장
+	void SetIndexFile(int index); // index에 해당하는 mVecImage 영상 설정 
 
 	void DbcFilterGaussian(IppByteImage& imgWork); // 가우시안 필터 다이얼로그 활성
 	void DbcInverse(IppByteImage& imgWork); // 영상 반전
@@ -152,4 +155,5 @@ public:
 	void GetIndexD(int GetIndex); // Tab3의 리스트 박스 인덱스를 받기 위함
 
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnDblclkListFile();
 };
