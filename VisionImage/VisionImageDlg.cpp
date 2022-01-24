@@ -11,6 +11,7 @@
 #include <functional>
 #include "vfw.h"
 #include <iostream>
+#include "opencv2/opencv.hpp"
 
 #include "AviChildFrame.h"
 #include "AviDoc.h"
@@ -372,6 +373,67 @@ void CVisionImageDlg::SetImage(IppDib& dib)
 	}
 }
 
+void CVisionImageDlg::typeImageRead(CString inputType)
+{
+	mVecImage.clear(); // 벡터 초기화 크기 및 인자 0으로 초기화
+
+	CString tpath = mTopPath; // 전역 변수 경로를 저장
+	CString Folderpath; // 상위 폴더 + 확장자 경로를 저장
+	int index = 0;
+
+	// 실행 파일 경로에서 파일 명을 제외한 상위 폴더의 경로를 얻음
+	int nLen = tpath.ReverseFind('\\');
+	if (nLen > 0)
+		tpath = tpath.Left(nLen);
+
+	// 폴더에서 확장자 파일의 경로를 저장
+	Folderpath = tpath + _T("\\*") + inputType;
+
+	CFileFind finder; // 파일 탐색 클래스 선언
+	BOOL bWorking = finder.FindFile(Folderpath); // 경로를 대입 (파일이 없는 경우 0을 반환)
+	CString fileName; // 파일명을 저장할 변수
+
+	while (bWorking) // 파일이 없을때까지 반복
+	{
+		bWorking = finder.FindNextFile(); // 다음 파일을 찾을 수 있게 함
+		if (finder.IsArchived())
+		{
+			CString _fileName = finder.GetFileName(); // 확장자를 포함한 파일명을 가져옴
+			if (_fileName == _T(".") ||
+				_fileName == _T("..") ||
+				_fileName == _T("Thumbs.db")) continue;
+			fileName = finder.GetFileTitle(); // 확장자를 제외한 파일명을 저장
+			
+			fileName += inputType; // 확장자 문자열 대입
+			m_ListFile.AddString(fileName); // 리스트 컨트롤에 파일명 삽입
+			fileName = tpath + _T("\\") + fileName; // 영상 파일의 경로를 저장
+			CT2CA pszConver(fileName); // CT2CA 는 unicode version const char* 를 ansi version const char* 로 변경해 주는 것
+			
+			std::string tmpImagePath(pszConver); // string 클래스에 파일 경로 저장
+			cv::Mat img = cv::imread(tmpImagePath); // Mat 형식의 파일로 영상 불러옴
+
+			if (img.empty())
+			{
+				cout << "Image load failed!" << endl;
+				printf("\n");
+				AfxMessageBox(_T("파일을 불러오지 못했습니다."));
+				break;
+			}
+
+			mVecImage.push_back(img); // 벡터에 영상 파일 저장
+			
+			if (!img.empty())
+			{
+				index++;
+				cout << index << " 번 vector에 저장 " << endl;
+				printf("\n");
+				
+			}
+			index++;
+		}
+	}
+}
+
 void CVisionImageDlg::DbcFilterGaussian(IppByteImage& imgWork)
 {
 	CGaussianDlg dlg;
@@ -678,60 +740,101 @@ void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 void CVisionImageDlg::OnClickedButtonOpen()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	IppDib m_Dib;
+	m_ListFile.ResetContent(); // 파일 목록 리스트 초기화
 	CString szFilter = _T("Image(*.BMP, *.JPG) | *.BMP;*.JPG; ||"); // ALL Files(*.*)|*.*|
 
-	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, szFilter);
+	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, szFilter); // 파일 선택 다이얼로그 
 
-	if (IDOK == dlg.DoModal())
+	if (IDOK == dlg.DoModal()) 
 	{
-		CString strPathName = dlg.GetPathName();
+		CString strPathName = dlg.GetPathName(); // 선택 파일 경로 얻어옴
+		mTopPath = strPathName; // 전역 변수에 경로 저장
+		CString ImageType = _T(".jpg"); // 확장자 문자열 저장
+		typeImageRead(ImageType); // 파일 목록 저장 함수 호출
 
-		m_Dib.Load(CT2A(strPathName)); // 큰 이미지 영상 설정 IppDib 사용
+		ImageType = _T(".bmp"); // 확장자 문자열 저장
+		typeImageRead(ImageType); // 파일 목록 저장 함수 호출
 
-		if (m_Dib.IsValid())
-		{
-			m_DibSave = m_Dib;
-
-			m_bCurImgLoad = TRUE;
-
-			if (m_Dib.GetBitCount() == 8)
-			{
-				dib = m_Dib;
-				
-				cout << "영상 불러옴" << endl;
-				printf("\n");
-			}
-			else if (m_Dib.GetBitCount() == 24)
-			{
-				IppRgbImage imgSrc;
-				IppByteImage imgDst;
-
-				IppDibToImage(m_Dib, imgSrc);
-				imgDst.Convert(imgSrc);
-				IppImageToDib(imgDst, m_Dib);
-
-				dib = m_Dib;
-
-				cout << "영상 불러옴" << endl;
-				printf("\n");
-			}
-
-			SetImage(m_Dib);
-			GetDlgItem(IDC_LIST_FILTER)->EnableWindow(TRUE);
-			GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
-			GetDlgItem(IDC_BUTTON_MAG)->EnableWindow(TRUE);
-			GetDlgItem(IDC_BUTTON_INOUTPUT)->EnableWindow(TRUE);
-			GetDlgItem(IDC_TAB_RECIPE)->EnableWindow(TRUE);
-
-		}
-		else
-		{
-			AfxMessageBox(_T("*.bmp, *.jpg 형식의 파일만 지원합니다."));
-		}
+		//ImageType = _T(".png"); // 확장자 문자열 저장
+		//typeImageRead(ImageType); // 파일 목록 저장 함수 호출
 	}
 	
-	m_Dib.DestroyBitmap(); // 이걸 안 하면 연속적인 이미지 띄우기가 안됨.
+	// BROWSEINFO를 활용하여 영상 목록을 리스트에 추가하고, 벡터에 영상을 대입 (폴더 내의 파일들을 확인할 수 없는 단점 있음)
+	/*ITEMIDLIST *pidlBrowse;
+	TCHAR       pszPathname[MAX_PATH];
+	BROWSEINFO  BrInfo;
+
+	BrInfo.hwndOwner = GetSafeHwnd();
+	BrInfo.pidlRoot = NULL;
+
+	memset(&BrInfo, 0, sizeof(BrInfo));
+	BrInfo.pszDisplayName = pszPathname;
+	BrInfo.lpszTitle = _T("Select Directory");
+	BrInfo.ulFlags = BIF_RETURNONLYFSDIRS;
+	pidlBrowse = ::SHBrowseForFolder(&BrInfo);
+	if (pidlBrowse != NULL)
+	{
+		SHGetPathFromIDList(pidlBrowse, pszPathname);
+	}
+
+	mTopPath = (LPCTSTR)pszPathname;*/
+
+
+	// 기존 파일 찾기 다이얼로그를 사용하여 하나의 영상만 띄우는 기능
+	//IppDib m_Dib;
+	//CString szFilter = _T("Image(*.BMP, *.JPG) | *.BMP;*.JPG; ||"); // ALL Files(*.*)|*.*|
+
+	//CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, szFilter);
+
+	//if (IDOK == dlg.DoModal())
+	//{
+	//	CString strPathName = dlg.GetPathName();
+
+	//	m_Dib.Load(CT2A(strPathName)); // 큰 이미지 영상 설정 IppDib 사용
+
+	//	if (m_Dib.IsValid())
+	//	{
+	//		m_DibSave = m_Dib;
+
+	//		m_bCurImgLoad = TRUE;
+
+	//		if (m_Dib.GetBitCount() == 8)
+	//		{
+	//			dib = m_Dib;
+	//			
+	//			cout << "영상 불러옴" << endl;
+	//			printf("\n");
+	//		}
+	//		else if (m_Dib.GetBitCount() == 24)
+	//		{
+	//			IppRgbImage imgSrc;
+	//			IppByteImage imgDst;
+
+	//			IppDibToImage(m_Dib, imgSrc);
+	//			imgDst.Convert(imgSrc);
+	//			IppImageToDib(imgDst, m_Dib);
+
+	//			dib = m_Dib;
+
+	//			cout << "영상 불러옴" << endl;
+	//			printf("\n");
+	//		}
+
+	//		SetImage(m_Dib);
+	//		GetDlgItem(IDC_LIST_FILTER)->EnableWindow(TRUE);
+	//		GetDlgItem(IDC_BUTTON_SAVE)->EnableWindow(TRUE);
+	//		GetDlgItem(IDC_BUTTON_MAG)->EnableWindow(TRUE);
+	//		GetDlgItem(IDC_BUTTON_INOUTPUT)->EnableWindow(TRUE);
+	//		GetDlgItem(IDC_TAB_RECIPE)->EnableWindow(TRUE);
+
+	//	}
+	//	else
+	//	{
+	//		AfxMessageBox(_T("*.bmp, *.jpg 형식의 파일만 지원합니다."));
+	//	}
+	//}
+	//
+	//m_Dib.DestroyBitmap(); // 이걸 안 하면 연속적인 이미지 띄우기가 안됨.
 }
 
 

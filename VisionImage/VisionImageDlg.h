@@ -7,6 +7,8 @@
 #include "IppDib.h"
 #include "IppImage.h"
 
+#include "opencv2/opencv.hpp"
+
 #include "Tab1.h"
 #include "Tab2.h"
 #include "Tab3.h"
@@ -42,6 +44,9 @@ private:
 
 	CListBox m_ListBox; // 활성 레시피 출력 리스트
 	CListBox m_ListFile; // 파일 출력 리스트
+
+	CString mTopPath; // 최상위 작업 폴더
+	std::vector<cv::Mat> mVecImage; // 영상 저장 벡터
 
 	float fRatio; // 원본 영상의 축소 비율
 	float SfRatioW, SfRatioH;
@@ -119,6 +124,8 @@ public:
 
 public:
 	void SetImage(IppDib& dib); // 초기 이미지 설정하여 출력
+
+	void typeImageRead(CString inputType);
 
 	void DbcFilterGaussian(IppByteImage& imgWork); // 가우시안 필터 다이얼로그 활성
 	void DbcInverse(IppByteImage& imgWork); // 영상 반전
