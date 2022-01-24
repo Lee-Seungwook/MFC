@@ -458,8 +458,6 @@ void CVisionImageDlg::SetIndexFile(int index)
 
 	if (m_Dib.IsValid())
 	{
-		m_DibSave = m_Dib;
-
 		m_bCurImgLoad = TRUE;
 
 		if (m_Dib.GetBitCount() == 8)
@@ -484,6 +482,7 @@ void CVisionImageDlg::SetIndexFile(int index)
 			printf("\n");
 		}
 		SetImage(m_Dib);
+		m_DibSave = m_Dib;
 	}
 	//m_Dib.DestroyBitmap(); // 이걸 안 하면 연속적인 이미지 띄우기가 안됨.
 }
@@ -913,7 +912,19 @@ void CVisionImageDlg::OnClickedButtonSave()
 		CString strPathName = dlg.GetPathName();
 		if (m_DibSave.IsValid())
 		{
-			m_DibSave.Save(CT2A(strPathName));
+			Mat m_MatSave;
+			IppByteImage m_ByteSave;
+			strPathName += _T(".bmp");
+			CT2CA pszConver(strPathName);
+
+			std::string tmpImagePath(pszConver);
+
+			IppDibToImage(m_DibSave, m_ByteSave);
+			IppImageToMat(m_ByteSave, m_MatSave);
+
+			cv::imwrite(tmpImagePath, m_MatSave);
+
+			// m_DibSave.Save(CT2A(strPathName));
 
 			cout << "영상 저장" << endl;
 			printf("\n");
