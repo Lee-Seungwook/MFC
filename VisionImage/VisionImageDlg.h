@@ -65,10 +65,7 @@ private:
 	int m_nEditHeight; // 픽셀 y 좌표
 	int m_nEditWidth; // 픽셀 x 좌표
 
-	BYTE m_bPixels; // 픽셀 수치
-
-//	int m_nPixels;
-// 픽셀 수치 값
+	BYTE m_bPixels; // 픽셀 값 (0 ~ 255)
 
 	int m_nStartPosX, m_nStartPosY; // 출력 영상 시작 좌표 
 
