@@ -208,7 +208,6 @@ void IppEdgeCanny(IppByteImage& imgSrc, IppByteImage& imgEdge, float sigma, floa
 		}
 
 	// 4. 히스테리시스 엣지 트래킹
-
 	while (!strong_edges.empty())
 	{
 		IppPoint p = strong_edges.back();

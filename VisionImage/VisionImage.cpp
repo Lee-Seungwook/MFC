@@ -7,9 +7,7 @@
 #include "VisionImage.h"
 #include "VisionImageDlg.h"
 
-#include "AviChildFrame.h"
-#include "AviDoc.h"
-#include "AviView.h"
+
 
 
 
@@ -27,7 +25,7 @@ END_MESSAGE_MAP()
 
 // CVisionImageApp 생성
 
-CVisionImageApp::CVisionImageApp() : m_pNewDib(NULL), m_pImageDocTemplate(NULL), m_pAviDocTemplate(NULL)
+CVisionImageApp::CVisionImageApp() : m_pNewDib(NULL), m_pImageDocTemplate(NULL)
 {
 	// TODO: 여기에 생성 코드를 추가합니다.
 	// InitInstance에 모든 중요한 초기화 작업을 배치합니다.
@@ -46,6 +44,9 @@ BOOL CVisionImageApp::InitInstance()
 	// 응용 프로그램 매니페스트가 ComCtl32.dll 버전 6 이상을 사용하여 비주얼 스타일을
 	// 사용하도록 지정하는 경우, Windows XP 상에서 반드시 InitCommonControlsEx()가 필요합니다.
 	// InitCommonControlsEx()를 사용하지 않으면 창을 만들 수 없습니다.
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(InitCtrls);
 	// 응용 프로그램에서 사용할 모든 공용 컨트롤 클래스를 포함하도록
@@ -65,13 +66,7 @@ BOOL CVisionImageApp::InitInstance()
 
 	// 응용 프로그램의 문서 템플릿을 등록합니다. 문서 템플릿은
 	// 문서, 프레임 창 및 뷰 사이의 연결 역할을 합니다.
-	m_pAviDocTemplate = new CMultiDocTemplate(IDR_AVI_TYPE,
-		RUNTIME_CLASS(CAviDoc),
-		RUNTIME_CLASS(CAviChildFrame), // 사용자 지정 MDI 자식 프레임입니다.
-		RUNTIME_CLASS(CAviView));
-	if (!m_pAviDocTemplate)
-		return FALSE;
-	AddDocTemplate(m_pAviDocTemplate);
+	
 
 
 	// 표준 초기화
@@ -111,6 +106,8 @@ BOOL CVisionImageApp::InitInstance()
 #if !defined(_AFXDLL) && !defined(_AFX_NO_MFC_CONTROLS_IN_DIALOGS)
 	ControlBarCleanUp();
 #endif
+
+	_CrtSetBreakAlloc(9967);
 
 	// 대화 상자가 닫혔으므로 응용 프로그램의 메시지 펌프를 시작하지 않고  응용 프로그램을 끝낼 수 있도록 FALSE를
 	// 반환합니다.

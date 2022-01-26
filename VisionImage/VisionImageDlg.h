@@ -156,4 +156,6 @@ public:
 
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnDblclkListFile();
+	afx_msg void OnDestroy();
+//	afx_msg void OnEnChangeEditWidth();
 };

@@ -41,6 +41,7 @@ BEGIN_MESSAGE_MAP(CBinarizationDlg, CDialogEx)
 	ON_WM_HSCROLL()
 	ON_WM_PAINT()
 	ON_EN_CHANGE(IDC_THRESHOLD_EDIT, &CBinarizationDlg::OnChangeThresholdEdit)
+	ON_BN_CLICKED(IDOK, &CBinarizationDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -145,4 +146,12 @@ void CBinarizationDlg::OnChangeThresholdEdit()
 	// 현재 설정된 임계값을 이용하여 미리보기 영상의 이진화를 수행한다.
 	MakePreviewImage();
 	Invalidate(FALSE);
+}
+
+
+void CBinarizationDlg::OnBnClickedOk()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	CDialogEx::OnOK();
+	EndDialog(IDOK);
 }

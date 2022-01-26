@@ -37,4 +37,5 @@ public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnPaint();
 	afx_msg void OnChangeThresholdEdit();
+	afx_msg void OnBnClickedOk();
 };

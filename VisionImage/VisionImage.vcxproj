@@ -32,6 +32,7 @@
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -95,6 +96,8 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(GENICAM_ROOT_V2_4)\library\cpp\include;$(CREVIS_CAM_ROOT)/Cameras/MCam40/include;C:\opencv\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,6 +105,7 @@
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>$(GENICAM_ROOT_V2_4)/library/CPP/Lib/Win32_i86;$(CREVIS_CAM_ROOT)/Cameras/MCam40/lib/x86;C:\opencv\mbuild\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -199,9 +203,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AviChildFrame.h" />
-    <ClInclude Include="AviDoc.h" />
-    <ClInclude Include="AviView.h" />
     <ClInclude Include="BinarizationDlg.h" />
     <ClInclude Include="BrightnessDlg.h" />
     <ClInclude Include="CannyEdgeDlg.h" />
@@ -211,7 +212,6 @@
     <ClInclude Include="GaussianDlg.h" />
     <ClInclude Include="HoughLineDlg.h" />
     <ClInclude Include="ImageSize.h" />
-    <ClInclude Include="IppAvi.h" />
     <ClInclude Include="IppConvert.h" />
     <ClInclude Include="IppDib.h" />
     <ClInclude Include="IppEnhance.h" />
@@ -220,7 +220,6 @@
     <ClInclude Include="IppImage.h" />
     <ClInclude Include="IppSegment.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Port.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RGBBYTE.h" />
     <ClInclude Include="RotateDlg.h" />
@@ -233,19 +232,14 @@
     <ClInclude Include="VisionImageDlg.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AviChildFrame.cpp" />
-    <ClCompile Include="AviDoc.cpp" />
-    <ClCompile Include="AviView.cpp" />
     <ClCompile Include="BinarizationDlg.cpp" />
     <ClCompile Include="BrightnessDlg.cpp" />
     <ClCompile Include="CannyEdgeDlg.cpp" />
     <ClCompile Include="ContrastDlg.cpp" />
     <ClCompile Include="GammaCorrectionDlg.cpp" />
     <ClCompile Include="GaussianDlg.cpp" />
-    <ClCompile Include="GrabSample.cpp" />
     <ClCompile Include="HoughLineDlg.cpp" />
     <ClCompile Include="ImageSize.cpp" />
-    <ClCompile Include="IppAvi.cpp" />
     <ClCompile Include="IppConvert.cpp" />
     <ClCompile Include="IppDib.cpp" />
     <ClCompile Include="IppDibJpg.cpp" />
@@ -259,7 +253,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Port.cpp" />
     <ClCompile Include="RotateDlg.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Tab1.cpp" />

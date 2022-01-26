@@ -13,10 +13,6 @@
 #include <iostream>
 #include "opencv2/opencv.hpp"
 
-#include "AviChildFrame.h"
-#include "AviDoc.h"
-#include "AviView.h"
-
 #include "IppImage.h"
 #include "IppConvert.h"
 #include "ImageSize.h"
@@ -36,10 +32,14 @@
 
 #include "Tab1.h"
 
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+#define _CRTDBG_MAP_ALLOC
+
 #include <gdiplus.h> //gdi+
 #pragma comment(lib, "gdiplus.lib") //gdi+
-
-#pragma comment (lib, "vfw32.lib")
 
 using namespace Gdiplus;
 using namespace std;
@@ -47,9 +47,7 @@ using namespace cv;
 
 #ifdef _DEBUG
 #define new new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-// #define new DEBUG_NEW
 #endif
-
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
@@ -159,6 +157,8 @@ BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_RECIPE, &CVisionImageDlg::OnTcnSelchangeTabRecipe)
 	ON_WM_ERASEBKGND()
 	ON_LBN_DBLCLK(IDC_LIST_FILE, &CVisionImageDlg::OnDblclkListFile)
+	ON_WM_DESTROY()
+//	ON_EN_CHANGE(IDC_EDIT_WIDTH, &CVisionImageDlg::OnEnChangeEditWidth)
 END_MESSAGE_MAP()
 
 
@@ -167,6 +167,8 @@ END_MESSAGE_MAP()
 BOOL CVisionImageDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	_CrtSetBreakAlloc(7061);
 
 	//// 시스템 메뉴에 "정보..." 메뉴 항목을 추가합니다.
 
@@ -244,6 +246,9 @@ BOOL CVisionImageDlg::OnInitDialog()
 	//	return false;
 	//}
 
+	
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -503,6 +508,7 @@ void CVisionImageDlg::DbcFilterGaussian(IppByteImage& imgWork)
 		SetImage(dib);
 		
 		m_ListBox.AddString(_T("Filter_Gaussian"));
+		
 	}
 }
 
@@ -539,6 +545,7 @@ void CVisionImageDlg::DbcBrightness(IppDib& DibWork)
 		SetImage(dib);
 
 		m_ListBox.AddString(_T("Brightness"));
+		
 	}
 }
 
@@ -561,6 +568,7 @@ void CVisionImageDlg::DbcContrast(IppDib& DibWork)
 		SetImage(dib);
 
 		m_ListBox.AddString(_T("Contrast"));
+		
 	}
 }
 
@@ -583,6 +591,7 @@ void CVisionImageDlg::DbcGammaCorrection(IppDib& DibWork)
 		SetImage(dib);
 
 		m_ListBox.AddString(_T("Gamma_Correction"));
+		
 	}
 }
 
@@ -653,6 +662,7 @@ void CVisionImageDlg::DbcBinary(IppDib& DibWork)
 		SetImage(dib);
 
 		m_ListBox.AddString(_T("Binary"));
+		
 	}
 }
 
@@ -675,6 +685,7 @@ void CVisionImageDlg::DbcRotate(IppDib& DibWork)
 		SetImage(dib);
 
 		m_ListBox.AddString(_T("Rotate"));
+		
 	}
 }
 
@@ -751,6 +762,7 @@ void CVisionImageDlg::DbcEdgeCanny(IppByteImage& imgWork)
 		SetImage(dib);
 
 		m_ListBox.AddString(_T("Edge_Canny"));
+		
 	}
 }
 
@@ -787,6 +799,7 @@ void CVisionImageDlg::DbcHoughLine(IppByteImage& imgWork)
 		SetImage(dib);
 
 		m_ListBox.AddString(_T("Hough_Line"));
+		
 	}
 }
 
@@ -1109,7 +1122,7 @@ void CVisionImageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	CRect rt;
+	CRect rt(m_nStartPosX, m_nStartPosY, nOriginImgWidth, nOriginImgHeight);
 
 	((CStatic*)GetDlgItem(IDC_IMAGE))->GetWindowRect(&rt);
 	ScreenToClient(&rt);
@@ -1121,45 +1134,55 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 		if (m_bCurImgMag == FALSE)
 		{
 			if (rt.PtInRect(point))
-			{ 
-				m_ptX = point.x * fPtRatio; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
-				m_ptX = point.x * fPtRatio; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
-				m_ptY = point.y * fPtRatio;
-
-				m_nEditWidth = m_ptX;
-				m_nEditHeight = m_ptY;
-				// m_nPixels = p[m_ptX][m_ptY]; - 메모리 오류
-
-				UpdateData(FALSE);
-			}
-			else
 			{
+				m_ptX = point.x - 266 - m_nStartPosX; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
+				m_ptY = point.y - 12 - m_nStartPosY;
 
+				if (m_ptX < 0) m_ptX = 0;
+
+				if (m_ptY < 0) m_ptY = 0;
+
+				if (m_ptX > nThumbImgWidth) m_ptX = 0;
+
+				if (m_ptY > nThumbImgHeight) m_ptY = 0;
+
+				int m_Image_Width = m_Image_rect.Width();
+				int m_Image_Height = m_Image_rect.Height();
+
+				float m_fPtRatio;
+				
+				m_fPtRatio = max((float)nOriginImgWidth / (float)m_Image_Width, (float)nOriginImgHeight / (float)m_Image_Height);
+				
+				m_nEditWidth = static_cast<int>(m_ptX * m_fPtRatio);
+				m_nEditHeight = static_cast<int>(m_ptY * m_fPtRatio);
 			}
+			// m_nPixels = p[m_ptX][m_ptY]; - 메모리 오류
+
+			UpdateData(FALSE);
 		}
-		else if (m_bCurImgMag == TRUE)
-		{
-			if (rt.PtInRect(point)) // 비슷하게는 나옴...
-			{
-				float fPtMagRatio = fPtRatio / 3;
-				m_ptX = point.x * fPtMagRatio + ImageCorX * fPtRatio; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
-				m_ptY = point.y * fPtMagRatio + (nThumbImgHeight * 2 / 3) * fPtRatio - ImageCorY * fPtRatio;
+		//else if (m_bCurImgMag == TRUE)
+		//{
+		//	if (rt.PtInRect(point)) // 비슷하게는 나옴...
+		//	{
+		//		float fPtMagRatio = fPtRatio / 3;
+		//		m_ptX = point.x * fPtMagRatio + ImageCorX * fPtRatio; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
+		//		m_ptY = point.y * fPtMagRatio + (nThumbImgHeight * 2 / 3) * fPtRatio - ImageCorY * fPtRatio;
 
-				m_nEditWidth = m_ptX;
-				m_nEditHeight = m_ptY;
-				// m_nPixels = p[m_ptX][m_ptY]; - 메모리 오류
+		//		m_nEditWidth = m_ptX;
+		//		m_nEditHeight = m_ptY;
+		//		// m_nPixels = p[m_ptX][m_ptY]; - 메모리 오류
 
-				UpdateData(FALSE);
-			}
-			else
-			{
+		//		UpdateData(FALSE);
+		//	}
+		//	else
+		//	{
 
-			}
-		}
+		//	}
+		//}
 	}
-	
 	CDialogEx::OnMouseMove(nFlags, point);
 }
+
 
 void CVisionImageDlg::OnClickedButtonInoutput()
 {
@@ -1393,3 +1416,23 @@ BOOL CVisionImageDlg::OnEraseBkgnd(CDC* pDC)
 
 
 
+
+
+void CVisionImageDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	_CrtDumpMemoryLeaks();
+}
+
+
+//void CVisionImageDlg::OnEnChangeEditWidth()
+//{
+//	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+//	// CDialogEx::OnInitDialog() 함수를 재지정 
+//	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+//	// 이 알림 메시지를 보내지 않습니다.
+//
+//	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+//}

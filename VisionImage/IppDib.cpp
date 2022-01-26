@@ -22,6 +22,7 @@ IppDib::~IppDib()
 {
 	if (m_pDib)
 		delete[] m_pDib;
+	
 }
 
 BOOL IppDib::CreateGrayBitmap(LONG nWidth, LONG nHeight)
