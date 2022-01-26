@@ -92,7 +92,7 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_VISIONIMAGE_DIALOG, pParent)
 	, m_nEditHeight(0)
 	, m_nEditWidth(0)
-	, m_nPixels(0)
+	, m_bPixels(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	width = 0;
@@ -127,6 +127,15 @@ CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	m_bIOFlag = FALSE;
 }
 
+CVisionImageDlg::~CVisionImageDlg()
+{
+	m_DibSrc.DestroyBitmap();
+	m_DibRes.DestroyBitmap();
+	m_DibSave.DestroyBitmap();
+	dib.DestroyBitmap();
+	dibPrev.DestroyBitmap();
+}
+
 void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -136,10 +145,11 @@ void CVisionImageDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_WIDTH, m_nEditWidth);
 	DDX_Control(pDX, IDC_IMAGE, m_Picture);
 	DDX_Control(pDX, IDC_SMALL_IMAGE, m_Thumbnail);
-	DDX_Text(pDX, IDC_EDIT_PIXELS, m_nPixels);
+	//  DDX_Text(pDX, IDC_EDIT_PIXELS, m_nPixels);
 	DDX_Control(pDX, IDC_LIST_FILTER, m_ListBox);
 	DDX_Control(pDX, IDC_TAB_RECIPE, m_TabRecipe);
 	DDX_Control(pDX, IDC_LIST_FILE, m_ListFile);
+	DDX_Text(pDX, IDC_EDIT_PIXELS, m_bPixels);
 }
 
 BEGIN_MESSAGE_MAP(CVisionImageDlg, CDialogEx)
@@ -489,7 +499,7 @@ void CVisionImageDlg::SetIndexFile(int index)
 		SetImage(m_Dib);
 		m_DibSave = m_Dib;
 	}
-	//m_Dib.DestroyBitmap(); // 이걸 안 하면 연속적인 이미지 띄우기가 안됨.
+	m_Dib.DestroyBitmap(); // 이걸 안 하면 연속적인 이미지 띄우기가 안됨.
 }
 
 void CVisionImageDlg::DbcFilterGaussian(IppByteImage& imgWork)
@@ -1129,8 +1139,14 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 	int m_ptX = 0;
 	int	m_ptY = 0;
+
+	IppByteImage ByteImgMouse;
+
 	if (m_bCurImgLoad == TRUE)
 	{
+		IppDibToImage(m_DibRes, ByteImgMouse);
+
+		BYTE **p = ByteImgMouse.GetPixels2D();
 		if (m_bCurImgMag == FALSE)
 		{
 			if (rt.PtInRect(point))
@@ -1151,12 +1167,15 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 				float m_fPtRatio;
 				
-				m_fPtRatio = max((float)nOriginImgWidth / (float)m_Image_Width, (float)nOriginImgHeight / (float)m_Image_Height);
+				// 영상 출력 시 가장 작은 값으로 비율을 정해주므로, 역으로 가장 큰 값을 비율로 정해야 근사치가 나옴
+				m_fPtRatio = max((float)nOriginImgWidth / (float)m_Image_Width, (float)nOriginImgHeight / (float)m_Image_Height); 
 				
-				m_nEditWidth = static_cast<int>(m_ptX * m_fPtRatio);
-				m_nEditHeight = static_cast<int>(m_ptY * m_fPtRatio);
+				m_nEditWidth = static_cast<int>(m_ptX * m_fPtRatio); // x 좌표
+				m_nEditHeight = static_cast<int>(m_ptY * m_fPtRatio); // y 좌표
+
+				if (m_ptX >= 1 && m_ptY >= 1 ) m_bPixels = p[m_ptY][m_ptX]; // 픽셀 값 출력 (좌표가 1보다 큰 경우에만 출력, 0일 경우 메모리 접근 오류 있음)
 			}
-			// m_nPixels = p[m_ptX][m_ptY]; - 메모리 오류
+			
 
 			UpdateData(FALSE);
 		}

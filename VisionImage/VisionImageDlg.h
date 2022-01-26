@@ -65,7 +65,10 @@ private:
 	int m_nEditHeight; // 픽셀 y 좌표
 	int m_nEditWidth; // 픽셀 x 좌표
 
-	int m_nPixels; // 픽셀 수치 값
+	BYTE m_bPixels; // 픽셀 수치
+
+//	int m_nPixels;
+// 픽셀 수치 값
 
 	int m_nStartPosX, m_nStartPosY; // 출력 영상 시작 좌표 
 
@@ -79,6 +82,7 @@ private:
 // 생성입니다.
 public:
 	CVisionImageDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
+	~CVisionImageDlg(); // 소멸자
 	IppDib m_DibSrc; // 입력 영상
 	IppDib m_DibRes; // 입력 영상 크기 변환 결과
 	IppDib m_DibSave; // 입력 영상 저장 영상
@@ -158,4 +162,5 @@ public:
 	afx_msg void OnDblclkListFile();
 	afx_msg void OnDestroy();
 //	afx_msg void OnEnChangeEditWidth();
+	
 };
