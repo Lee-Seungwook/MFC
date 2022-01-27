@@ -83,10 +83,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-
 // CVisionImageDlg 대화 상자
-
-
 
 CVisionImageDlg::CVisionImageDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_VISIONIMAGE_DIALOG, pParent)
@@ -1144,39 +1141,36 @@ void CVisionImageDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (m_bCurImgLoad == TRUE)
 	{
-		IppDibToImage(m_DibRes, ByteImgMouse);
+		IppDibToImage(m_DibRes, ByteImgMouse); // 컨트롤에 출력한 영상을 Image로 변환
+		BYTE **p = ByteImgMouse.GetPixels2D(); // BYTE 형태의 Image 파일이므로 BYTE형 2차원 배열로 받는다.
 
-		BYTE **p = ByteImgMouse.GetPixels2D();
 		if (m_bCurImgMag == FALSE)
 		{
 			if (rt.PtInRect(point))
 			{
-				m_ptX = point.x - 266 - m_nStartPosX; // 좌표 구현은 했으나, 비율을 곱하는 것 때문에 3씩 더해지는 좌표로 출력....
-				m_ptY = point.y - 12 - m_nStartPosY;
+				m_ptX = point.x - rt.left - m_nStartPosX; // 상수는 클라이언트에서 컨트롤까지의 거리
+				m_ptY = point.y - rt.top - m_nStartPosY;
 
-				if (m_ptX < 0) m_ptX = 0;
-
-				if (m_ptY < 0) m_ptY = 0;
-
-				if (m_ptX > nThumbImgWidth) m_ptX = 0;
-
-				if (m_ptY > nThumbImgHeight) m_ptY = 0;
-
+				// 영상 영역을 벗어난 경우 예외 처리 ( Image 컨트롤 가로 또는 세로에 맞춰서 출력하므로 각각의 최대 지점에서 벗어나는 경우에는 0으로 초기화가 안됨 )
+				if (m_ptX < 0 || m_ptY < 0 || m_ptX > nThumbImgWidth || m_ptY > nThumbImgHeight) {
+					m_ptX = 0; m_ptY = 0;
+				}
+				
+				// 컨트롤의 가로 세로 크기 저장
 				int m_Image_Width = m_Image_rect.Width();
 				int m_Image_Height = m_Image_rect.Height();
 
-				float m_fPtRatio;
+				float m_fPtRatio; // 좌표 출력 시의 비율
 				
 				// 영상 출력 시 가장 작은 값으로 비율을 정해주므로, 역으로 가장 큰 값을 비율로 정해야 근사치가 나옴
 				m_fPtRatio = max((float)nOriginImgWidth / (float)m_Image_Width, (float)nOriginImgHeight / (float)m_Image_Height); 
 				
 				m_nEditWidth = static_cast<int>(m_ptX * m_fPtRatio); // x 좌표
 				m_nEditHeight = static_cast<int>(m_ptY * m_fPtRatio); // y 좌표
-
-				if (m_ptX >= 1 && m_ptY >= 1 ) m_bPixels = p[m_ptY][m_ptX]; // 픽셀 값 출력 (좌표가 1보다 큰 경우에만 출력, 0일 경우 메모리 접근 오류 있음)
+				
+				// 픽셀 값 출력 (좌표가 1보다 큰 경우, 원본 이미지의 크기 보다 1 작은 경우에만 출력) -> 이외의 경우에는 메모리 접근 오류 출력
+				if (m_ptX >= 1 && m_ptY >= 1 && m_ptX < nThumbImgWidth - 1 && m_ptY < nThumbImgHeight) m_bPixels = p[m_ptY][m_ptX]; 
 			}
-			
-
 			UpdateData(FALSE);
 		}
 		//else if (m_bCurImgMag == TRUE)
